@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TrucksDataTable from './components/TrucksDataTable.vue'
 import {useStore} from "./store";
 import Toast from "primevue/toast";
 import {useToast} from "primevue/usetoast";
@@ -28,6 +29,7 @@ onMounted(() => {
 <template>
   <Toast/>
   <div class="rounded overflow-hidden shadow-lg p-4 bg-white">
+    <TrucksDataTable/>
   </div>
 </template>
 
