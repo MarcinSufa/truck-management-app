@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@formkit/vue':
+        specifier: ^1.6.5
+        version: 1.6.5(tailwindcss@3.4.3)(vue@3.4.27(typescript@5.4.5))
       axios:
         specifier: ^1.7.2
         version: 1.7.2
@@ -323,6 +326,49 @@ packages:
   '@eslint/js@9.3.0':
     resolution: {integrity: sha512-niBqk8iwv96+yuTwjM6bWg8ovzAPF9qkICsGtcoa5/dmqcEMfdwNAX7+/OHcJHc7wj7XqPxH98oAHytFYlw6Sw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@formkit/core@1.6.5':
+    resolution: {integrity: sha512-LLq8+vLd9ddPYA0NkyvnKycN4ESU8Wqcl9TrllPyU/axduJunSIJMZz4LHzlwK8G26b0pQNegXF/hXaj4wbmng==}
+
+  '@formkit/dev@1.6.5':
+    resolution: {integrity: sha512-dg62HTehLPi9lLBShixr9AoYgIv13gpxTZgiHEvf1UZz2HQq0Lcp63d0a+XT/tQ2HTz2ewLUGeXSN9dUVkYFSg==}
+
+  '@formkit/i18n@1.6.5':
+    resolution: {integrity: sha512-mM1UKGSa0Mdd8a8AAF+6BCNFnf8gUD1nOzU6dJ9UoPE8M/qA+hmcPR3PJm39p6e3OaT5O0Gn/J6JxgccPyWmGA==}
+
+  '@formkit/inputs@1.6.5':
+    resolution: {integrity: sha512-mHLMF0JMFZL/JC6NYrG4xaIdi7lUNE+tdC+QMipBdhobUhND0EJSpO6QNPGF6OLd9Zm9MDgqAzNXEtc05/nvow==}
+
+  '@formkit/observer@1.6.5':
+    resolution: {integrity: sha512-3Vh2Pj6tHX3wosbNm5VvwVVlTI5Zq0FT3dl/+DAuaCG84abpTLoc3O0C2pmbQcDaJ4aCuxu3+tBmhY9J7qFXMQ==}
+
+  '@formkit/rules@1.6.5':
+    resolution: {integrity: sha512-j9ylAibBvNx+3tEAkYzl2HjQwDzWV2mRPmFH7GTAmtxijFiktPS8HTU9H88H/x2stkYk9S13/MMeqDgZnc3VrQ==}
+
+  '@formkit/themes@1.6.5':
+    resolution: {integrity: sha512-C+ANzH6qw4zS7niv+RamJAqpASOPfrZvMURVj5HQcT1XlcYB7ULvA9UmDW/AKOqP/OGf/OL6WvOzA7B16UkiiA==}
+    peerDependencies:
+      tailwindcss: ^3.2.0
+      unocss: 0.x.x
+      windicss: ^3.0.0
+    peerDependenciesMeta:
+      tailwindcss:
+        optional: true
+      unocss:
+        optional: true
+      windicss:
+        optional: true
+
+  '@formkit/utils@1.6.5':
+    resolution: {integrity: sha512-fohOg344tqFujHlEwvyHzzH5YiOBgecuOPkg7r7QObUrsH8gP1N8Rp9CHZlafxZ1zAEHZY2nTNx0VVQBkVmJbA==}
+
+  '@formkit/validation@1.6.5':
+    resolution: {integrity: sha512-mnU+F6uXsNlczbU7QOq6QfsafSYNmMF9zvOpk4ravn9mba0IDXRhkPgU/+VFpcF/EEiXmqQql3pqQ7Vqv2wVbg==}
+
+  '@formkit/vue@1.6.5':
+    resolution: {integrity: sha512-D5W8JfhFJXUXm8RX0OfPbPZt3Ds68iqxSrvbvmyabae2cBlGl8sqhMEuc48FptnsGOYqYXOhG+CPni+uE72Whw==}
+    peerDependencies:
+      vue: ^3.4.0
 
   '@humanwhocodes/config-array@0.13.0':
     resolution: {integrity: sha512-DZLEEqFWQFiyK6h5YIeynKx7JlvCYWL0cImfSRXZ9l4Sg2efkFGTuFf6vzXjK1cq6IYkU+Eg/JizXw+TD2vRNw==}
@@ -1746,6 +1792,68 @@ snapshots:
       - supports-color
 
   '@eslint/js@9.3.0': {}
+
+  '@formkit/core@1.6.5':
+    dependencies:
+      '@formkit/utils': 1.6.5
+
+  '@formkit/dev@1.6.5':
+    dependencies:
+      '@formkit/core': 1.6.5
+      '@formkit/utils': 1.6.5
+
+  '@formkit/i18n@1.6.5':
+    dependencies:
+      '@formkit/core': 1.6.5
+      '@formkit/utils': 1.6.5
+      '@formkit/validation': 1.6.5
+
+  '@formkit/inputs@1.6.5':
+    dependencies:
+      '@formkit/core': 1.6.5
+      '@formkit/utils': 1.6.5
+
+  '@formkit/observer@1.6.5':
+    dependencies:
+      '@formkit/core': 1.6.5
+      '@formkit/utils': 1.6.5
+
+  '@formkit/rules@1.6.5':
+    dependencies:
+      '@formkit/core': 1.6.5
+      '@formkit/utils': 1.6.5
+      '@formkit/validation': 1.6.5
+
+  '@formkit/themes@1.6.5(tailwindcss@3.4.3)':
+    dependencies:
+      '@formkit/core': 1.6.5
+    optionalDependencies:
+      tailwindcss: 3.4.3
+
+  '@formkit/utils@1.6.5': {}
+
+  '@formkit/validation@1.6.5':
+    dependencies:
+      '@formkit/core': 1.6.5
+      '@formkit/observer': 1.6.5
+      '@formkit/utils': 1.6.5
+
+  '@formkit/vue@1.6.5(tailwindcss@3.4.3)(vue@3.4.27(typescript@5.4.5))':
+    dependencies:
+      '@formkit/core': 1.6.5
+      '@formkit/dev': 1.6.5
+      '@formkit/i18n': 1.6.5
+      '@formkit/inputs': 1.6.5
+      '@formkit/observer': 1.6.5
+      '@formkit/rules': 1.6.5
+      '@formkit/themes': 1.6.5(tailwindcss@3.4.3)
+      '@formkit/utils': 1.6.5
+      '@formkit/validation': 1.6.5
+      vue: 3.4.27(typescript@5.4.5)
+    transitivePeerDependencies:
+      - tailwindcss
+      - unocss
+      - windicss
 
   '@humanwhocodes/config-array@0.13.0':
     dependencies:

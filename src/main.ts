@@ -5,6 +5,8 @@ import PrimeVue from 'primevue/config'; // core css
 import 'primevue/resources/themes/aura-light-green/theme.css'
 import './style.css'
 import aura from './presets/aura';
+import { plugin } from '@formkit/vue'
+import myConfig from '../formkit.config'
 
 import ToastService from 'primevue/toastservice';
 
@@ -17,6 +19,7 @@ app.use(PrimeVue, {
     pt: aura
 })
 app.use(ToastService)
+app.use(plugin, myConfig)
 
 app.mount('#app')
 
