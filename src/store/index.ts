@@ -10,6 +10,7 @@ export const useStore = defineStore('main', {
         API_URL: 'http://qa-api-mock-3.eu-central-1.elasticbeanstalk.com/',
         isInitialized: false,
         isFormVisible: false,
+        trucksLoading: false,
         draftTruck: {} as Truck | {},
         isTruckEdition: false,
         trucks: [] as Truck[],
@@ -35,6 +36,7 @@ export const useStore = defineStore('main', {
         },
         async fetchTrucks(param) {
             try {
+                this.trucksLoading = true
                 const response = await axios.get(this.API_URL + param, {
                     params: {
                         limit: 30
@@ -43,6 +45,8 @@ export const useStore = defineStore('main', {
                 this.trucks = response.data
             } catch (error) {
                 console.log(error)
+            } finally {
+                this.trucksLoading = true;
             }
         },
         async fetchTruckById(param) {

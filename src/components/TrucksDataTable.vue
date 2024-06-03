@@ -8,9 +8,11 @@ import {useStore} from "../store";
 import Dialog from "primevue/dialog";
 import Toast from "primevue/toast";
 import {truckStatusData} from "../utils/truck-utils";
+import notFound from '../assets/images/truck-not-found.jpg'
 
 const store = useStore()
 const trucks = computed(() => store.trucks)
+const loading = ref(store.trucksLoading)
 const truckStatus = truckStatusData;
 
 const deleteTruckDialog = ref(false)
@@ -49,13 +51,27 @@ function addTruck() {
 
 <template>
   <Toast/>
-  <DataTable :value="trucks" tableStyle="min-width: 50rem;" scrollable scrollHeight="50rem">
+  <DataTable :value="trucks" tableStyle="min-width: 50rem;" scrollable scrollHeight="50rem" :loading="loading">
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-2">
         <span class="text-xl text-900 font-bold">Trucks Data</span>
         <Button icon="pi pi-plus" raised @click="addTruck"/>
       </div>
     </template>
+    <template #empty>
+      <div class='flex flex-col items-center justify-center my-4'>
+        <img :src='notFound' alt='Social Hive logo' width="400"/>
+        <div class="flex items-center mt-3">
+          <h2 class='text-bold mr-4'> No Truck data found, please add truck</h2>
+          <button class='bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded'
+                  @click="addTruck">
+            Add Truck
+          </button>
+        </div>
+      </div>
+
+    </template>
+    <template #loading> Loading truck data. Please wait.</template>
     <Column field="id" header="ID" sortable style="max-width: 12rem; overflow: hidden"></Column>
     <Column field="status" header="status" sortable style="width: 22%">
       <template #body="slotProps">
