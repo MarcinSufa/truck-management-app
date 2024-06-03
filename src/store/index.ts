@@ -9,6 +9,8 @@ export const useStore = defineStore('main', {
         API_URL: 'http://qa-api-mock-3.eu-central-1.elasticbeanstalk.com/',
         isInitialized: false,
         isFormVisible: false,
+        draftTruck: {} as Truck | {},
+        isTruckEdition: false,
         trucks: [] as Truck[],
         toast: useToast()
     }),
@@ -20,6 +22,15 @@ export const useStore = defineStore('main', {
         },
         toggleForm() {
             this.isFormVisible = !this.isFormVisible
+        },
+        editTruckForm(truck: Truck) {
+            this.draftTruck = truck
+            this.isFormVisible = true
+            this.isTruckEdition = true
+        },
+        resetEditForm() {
+            this.draftTruck = {} as Truck
+            this.isTruckEdition = false
         },
         async fetchTrucks(param) {
             try {
@@ -42,10 +53,14 @@ export const useStore = defineStore('main', {
             }
         },
         async updateTruck(param) {
+            const {id, ...data} = param
             try {
-                await axios.put(this.API_URL + param)
+                await axios.put(`${this.API_URL}trucks/${id}`, data)
             } catch (error) {
                 console.log(error)
+            } finally {
+                this.isFormVisible = false;
+                this.resetEditForm()
             }
         },
         async deleteTruck(id) {
@@ -57,9 +72,7 @@ export const useStore = defineStore('main', {
         },
         async addTruck(data) {
             try {
-                console.log('addTruck', data);
                 await axios.post(`${this.API_URL}trucks`, data)
-
             } catch (error) {
                 console.log(error)
             } finally {

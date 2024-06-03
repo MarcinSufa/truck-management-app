@@ -6,10 +6,48 @@ import {truckStatusData} from "../utils/truck-utils";
 import Tag from 'primevue/tag';
 
 const store = useStore()
+const truckDataValue = computed(() => store.draftTruck)
+const isEdition = computed(() => store.isTruckEdition)
 
-const submitTruckData = (submitData: any) => {
-  store.addTruck(submitData)
+const submitTruckData = async (submitData: any) => {
+  if (isEdition.value) {
+    await store.updateTruck(submitData)
+  } else {
+    await store.addTruck(submitData)
+  }
+  await store.fetchTrucks('trucks');
 }
+const allStatusOptions = [
+  {value: 'LOADING', label: 'LOADING'},
+  {value: 'TO_JOB', label: 'TO JOB'},
+  {value: 'AT_JOB', label: 'AT JOB'},
+  {value: 'RETURNING', label: 'RETURNING'},
+  {value: 'OUT_OF_SERVICE', label: 'OUT OF SERVICE'}]
+
+const statusesPermission = {
+  'LOADING': ['TO_JOB', 'OUT_OF_SERVICE'],
+  'TO_JOB': ['AT_JOB', 'OUT_OF_SERVICE'],
+  'AT_JOB': ['RETURNING', 'OUT_OF_SERVICE'],
+  'RETURNING': ['LOADING', 'OUT_OF_SERVICE'],
+  'OUT_OF_SERVICE': ['LOADING', 'TO_JOB', 'AT_JOB', 'RETURNING']
+}
+
+const statusOptions = computed(() => {
+      if (Object.keys(truckDataValue.value).length === 0) {
+        return allStatusOptions
+      }
+      return allStatusOptions.map((status) => {
+        return {
+          ...status,
+          attrs: {
+            disabled: !statusesPermission[truckDataValue.value.status].includes(status.value)
+          }
+        }
+      })
+
+    }
+)
+
 
 const formContext = useFormKitContextById('truck')
 const getImageFromStatus = computed(() => {
@@ -20,7 +58,7 @@ const getTrackStatusColor = computed(() => {
   return truckStatusData[formContext.value.value.status]?.color || null
 })
 
-const getTrackStatusLabel =computed(() => {
+const getTrackStatusLabel = computed(() => {
   return truckStatusData[formContext.value.value.status]?.label || null
 })
 
@@ -32,6 +70,7 @@ const getTrackStatusLabel =computed(() => {
       id='truck'
       v-slot='{ value: formData }'
       type='form'
+      :value="truckDataValue"
       form-class='fk-univ-app p-4'
       submit-label='Submit'
       submit-class='btn btn-primary'
@@ -50,12 +89,7 @@ const getTrackStatusLabel =computed(() => {
           type="radio"
           outer-class='col-span-3'
           validation='required'
-          :options="[{
-            value: 'LOADING', label: 'LOADING'},
-            {value: 'TO_JOB', label: 'TO JOB'},
-            {value: 'AT_JOB', label: 'AT JOB'},
-            {value: 'RETURNING', label: 'RETURNING'},
-            {value: 'OUT_OF_SERVICE', label: 'OUT OF SERVICE'}]"
+          :options="statusOptions"
           help="Select Truck status."
       />
 

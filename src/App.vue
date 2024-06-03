@@ -28,6 +28,9 @@ const isFormVisible = computed({
   },
   set(val) {
     store.isFormVisible = val
+    if(!val) {
+      store.resetEditForm()
+    }
   }
 })
 
