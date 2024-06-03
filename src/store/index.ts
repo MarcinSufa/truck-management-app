@@ -2,6 +2,7 @@ import {defineStore} from 'pinia'
 import axios from "axios"
 import {Truck} from "../utils/types";
 import {useToast} from "primevue/usetoast";
+import * as toast from '../composables/toast'
 
 
 export const useStore = defineStore('main', {
@@ -29,7 +30,7 @@ export const useStore = defineStore('main', {
             this.isTruckEdition = true
         },
         resetEditForm() {
-            this.draftTruck = {} as Truck
+            this.draftTruck = {}
             this.isTruckEdition = false
         },
         async fetchTrucks(param) {
@@ -56,8 +57,10 @@ export const useStore = defineStore('main', {
             const {id, ...data} = param
             try {
                 await axios.put(`${this.API_URL}trucks/${id}`, data)
+                toast.info('Update', `Truck with id: ${id} was updated successfully!`)
             } catch (error) {
                 console.log(error)
+                toast.error('Error', `Truck with id: ${id} was updated successfully!`)
             } finally {
                 this.isFormVisible = false;
                 this.resetEditForm()
@@ -66,15 +69,19 @@ export const useStore = defineStore('main', {
         async deleteTruck(id) {
             try {
                 await axios.delete(`${this.API_URL}trucks/${id}`)
+                toast.success('Delete', `Truck with id: ${id} was deleted successfully!`)
             } catch (error) {
                 console.log(error)
+                toast.error('Error', `Truck with id: ${id} was not deleted!`)
             }
         },
         async addTruck(data) {
             try {
                 await axios.post(`${this.API_URL}trucks`, data)
+                toast.success('Added', `Truck ${data.name} was added successfully!`)
             } catch (error) {
                 console.log(error)
+                toast.error('Error', `Truck ${data.name} was not added!`)
             } finally {
                 this.isFormVisible = false;
             }

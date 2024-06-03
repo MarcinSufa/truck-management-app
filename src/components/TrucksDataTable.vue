@@ -6,13 +6,11 @@ import Button from "primevue/button";
 import {computed, ref} from 'vue'
 import {useStore} from "../store";
 import Dialog from "primevue/dialog";
-import {useToast} from "primevue/usetoast";
 import Toast from "primevue/toast";
 import {truckStatusData} from "../utils/truck-utils";
 
 const store = useStore()
 const trucks = computed(() => store.trucks)
-const toast = useToast()
 const truckStatus = truckStatusData;
 
 const deleteTruckDialog = ref(false)
@@ -35,15 +33,12 @@ const toggleDeleteTruckDialog = (truck) => {
   deleteTruckId.value = truck.id;
 }
 
-const deleteSelectedTruck = () => {
+const deleteSelectedTruck = async () => {
   const id = deleteTruckId.value;
-  store.deleteTruck(deleteTruckId.value)
+  await store.deleteTruck(deleteTruckId.value)
   deleteTruckDialog.value = false;
   deleteTruckId.value = null;
-  toast.add({
-    severity: 'success', summary: 'Successful', detail: `Truck with id: ${id} was Deleted`, life: 3000
-  })
-  store.fetchTrucks('trucks');
+  await store.fetchTrucks('trucks');
 }
 
 function addTruck() {

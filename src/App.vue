@@ -14,14 +14,6 @@ const isAppInit = computed(() => store.isInitialized)
 
 const toast = useToast()
 
-function greet() {
-  toast.add({
-    severity: 'success',
-    summary: 'Success',
-    detail: 'This is a success message',
-  })
-}
-
 const isFormVisible = computed({
   get() {
     return store.isFormVisible
