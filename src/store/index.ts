@@ -46,7 +46,7 @@ export const useStore = defineStore('main', {
             } catch (error) {
                 console.log(error)
             } finally {
-                this.trucksLoading = true;
+                this.trucksLoading = false;
             }
         },
         async fetchTruckById(param) {

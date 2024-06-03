@@ -9,10 +9,11 @@ import Dialog from "primevue/dialog";
 import Toast from "primevue/toast";
 import {truckStatusData} from "../utils/truck-utils";
 import notFound from '../assets/images/truck-not-found.jpg'
+import truck from '../assets/images/truck.gif'
 
 const store = useStore()
 const trucks = computed(() => store.trucks)
-const loading = ref(store.trucksLoading)
+const loading = computed(() => store.trucksLoading)
 const truckStatus = truckStatusData;
 
 const deleteTruckDialog = ref(false)
@@ -52,15 +53,29 @@ function addTruck() {
 <template>
   <Toast/>
   <DataTable :value="trucks" tableStyle="min-width: 50rem;" scrollable scrollHeight="50rem" :loading="loading">
+    <template #loading>
+      <div class="flex items-center absolute -bottom-5 bg-white">
+        <img :src='truck' alt='Truck image' class="mr-5 " width="50"/>
+        <div class='flex flex-col items-center justify-center mr-3'>
+          Loading truck data. Please wait.
+      </div>
+        <div class="lds-ring">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    </template>
     <template #header>
-      <div class="flex flex-wrap items-center justify-between gap-2">
+      <div v-if="!loading" class="flex flex-wrap items-center justify-between gap-2">
         <span class="text-xl text-900 font-bold">Trucks Data</span>
         <Button icon="pi pi-plus" raised @click="addTruck"/>
       </div>
     </template>
     <template #empty>
-      <div class='flex flex-col items-center justify-center my-4'>
-        <img :src='notFound' alt='Social Hive logo' width="400"/>
+      <div v-if="!loading" class='flex flex-col items-center justify-center my-4'>
+        <img :src='notFound' alt='Truck not found' width="400"/>
         <div class="flex items-center mt-3">
           <h2 class='text-bold mr-4'> No Truck data found, please add truck</h2>
           <button class='bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded'
@@ -69,9 +84,10 @@ function addTruck() {
           </button>
         </div>
       </div>
-
     </template>
-    <template #loading> Loading truck data. Please wait.</template>
+
+
+
     <Column field="id" header="ID" sortable style="max-width: 12rem; overflow: hidden"></Column>
     <Column field="status" header="status" sortable style="width: 22%">
       <template #body="slotProps">
@@ -107,5 +123,53 @@ function addTruck() {
 </template>
 
 <style scoped>
+.lds-ring {
+  color: #1c4c5b
+}
 
+.lds-ring,
+.lds-ring div {
+  box-sizing: border-box;
+}
+
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+}
+
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  margin: 4px;
+  border: 4px solid currentColor;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: currentColor transparent transparent transparent;
+}
+
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 </style>
