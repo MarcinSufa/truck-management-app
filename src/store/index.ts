@@ -34,7 +34,7 @@ export const useStore = defineStore('main', {
             this.draftTruck = {}
             this.isTruckEdition = false
         },
-        async fetchTrucks(param) {
+        async fetchTrucks(param: string) {
             try {
                 this.trucksLoading = true
                 const response = await axios.get(this.API_URL + param, {
@@ -49,15 +49,7 @@ export const useStore = defineStore('main', {
                 this.trucksLoading = false;
             }
         },
-        async fetchTruckById(param) {
-            try {
-                const data = await axios.get(this.API_URL + param)
-                return data.data
-            } catch (error) {
-                console.log(error)
-            }
-        },
-        async updateTruck(param) {
+        async updateTruck(param: Truck) {
             const {id, ...data} = param
             try {
                 await axios.put(`${this.API_URL}trucks/${id}`, data)
@@ -70,7 +62,7 @@ export const useStore = defineStore('main', {
                 this.resetEditForm()
             }
         },
-        async deleteTruck(id) {
+        async deleteTruck(id: string) {
             try {
                 await axios.delete(`${this.API_URL}trucks/${id}`)
                 toast.success('Delete', `Truck with id: ${id} was deleted successfully!`)
@@ -79,7 +71,7 @@ export const useStore = defineStore('main', {
                 toast.error('Error', `Truck with id: ${id} was not deleted!`)
             }
         },
-        async addTruck(data) {
+        async addTruck(data: Truck) {
             try {
                 await axios.post(`${this.API_URL}trucks`, data)
                 toast.success('Added', `Truck ${data.name} was added successfully!`)

@@ -3,15 +3,12 @@ import TrucksDataTable from './components/TrucksDataTable.vue'
 import {useStore} from "./store";
 import Toast from "primevue/toast";
 import {useToast} from "primevue/usetoast";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted} from "vue";
 import Card from "primevue/card";
 import TruckForm from "./components/TruckForm.vue";
 import Dialog from "primevue/dialog";
 
 const store = useStore()
-const trucks = computed(() => store.trucks)
-const isAppInit = computed(() => store.isInitialized)
-
 const toast = useToast()
 
 const isFormVisible = computed({

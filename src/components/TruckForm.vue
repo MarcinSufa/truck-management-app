@@ -40,7 +40,7 @@ const statusOptions = computed(() => {
         return {
           ...status,
           attrs: {
-            disabled: !statusesPermission[truckDataValue.value.status].includes(status.value)
+            disabled: !statusesPermission[truckDataValue.value.status].includes(status.value) as string
           }
         }
       })
@@ -51,15 +51,15 @@ const statusOptions = computed(() => {
 
 const formContext = useFormKitContextById('truck')
 const getImageFromStatus = computed(() => {
-  return truckStatusData[formContext.value.value.status]?.image || '/src/assets/images/loading-truck.gif'
+  return truckStatusData[formContext.value?.value?.status]?.image || '/src/assets/images/loading-truck.gif'
 })
 
 const getTrackStatusColor = computed(() => {
-  return truckStatusData[formContext.value.value.status]?.color || null
+  return truckStatusData[formContext.value?.value?.status]?.color || null
 })
 
 const getTrackStatusLabel = computed(() => {
-  return truckStatusData[formContext.value.value.status]?.label || null
+  return truckStatusData[formContext.value?.value?.status]?.label || null
 })
 
 </script>

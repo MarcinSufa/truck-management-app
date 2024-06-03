@@ -37,7 +37,6 @@ const toggleDeleteTruckDialog = (truck) => {
 }
 
 const deleteSelectedTruck = async () => {
-  const id = deleteTruckId.value;
   await store.deleteTruck(deleteTruckId.value)
   deleteTruckDialog.value = false;
   deleteTruckId.value = null;
