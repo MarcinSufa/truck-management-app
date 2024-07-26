@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import TrucksDataTable from './components/TrucksDataTable.vue'
-import {useStore} from "./store";
-import Toast from "primevue/toast";
-import {useToast} from "primevue/usetoast";
-import {computed, onMounted} from "vue";
-import Card from "primevue/card";
-import TruckForm from "./components/TruckForm.vue";
-import Dialog from "primevue/dialog";
+// import TrucksDataTable from './components/TrucksDataTable.vue'
+import { useStore } from './store'
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
+import { computed, onMounted, ref } from 'vue'
+import Card from 'primevue/card'
+import TruckForm from './components/TruckForm.vue'
+import Dialog from 'primevue/dialog'
+// import TruckDemandGraph from './components/TruckDemandGraph.vue'
+import { useRouter } from 'vue-router'
+import Menubar from 'primevue/menubar'
 
 const store = useStore()
 const toast = useToast()
+const router = useRouter()
 
 const isFormVisible = computed({
   get() {
@@ -17,27 +21,47 @@ const isFormVisible = computed({
   },
   set(val) {
     store.isFormVisible = val
-    if(!val) {
+    if (!val) {
       store.resetEditForm()
     }
-  }
+  },
 })
 
 onMounted(() => {
   store.initApp()
-  store.fetchTrucks('trucks');
+  store.fetchTrucks('trucks')
 })
+
+const menuItems = ref([
+  {
+    label: 'Trucks Data',
+    icon: 'pi pi-home',
+    command: () => {
+      router.push('/')
+    },
+  },
+  {
+    label: 'Truck Demand Graph',
+    icon: 'pi pi-star',
+    command: () => {
+      router.push('/demand')
+    },
+  },
+])
 
 
 </script>
 <template>
-  <Toast/>
-  <Dialog v-model:visible="isFormVisible"  modal header="Add Truck" :style="{ width: '25rem' }">
-    <TruckForm/>
+  <div class="card">
+    <Menubar :model="menuItems" />
+  </div>
+  <Toast />
+  <Dialog v-model:visible="isFormVisible" modal header="Add Truck" :style="{ width: '25rem' }">
+    <TruckForm />
   </Dialog>
-  <Card>
+  <Card class="w-100">
     <template #content>
-      <TrucksDataTable/>
+      <RouterView />
     </template>
   </Card>
 </template>
