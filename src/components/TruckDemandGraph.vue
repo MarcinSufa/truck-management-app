@@ -1,31 +1,49 @@
 <template>
-  <div>
+  <div class="relative">
     <Chart ref="chartMain" type="bar" :data="chartData" :options="chartOptions" class="h-[30rem]" />
-    <!--    <div ref="tooltipRef" v-show="tooltipActive" class="w-50 bg-amber-300 p-10"> {{ tooltipData }}</div>-->
-    <Card ref="tooltipRef" v-show="tooltipActive" style="width: 15rem; overflow: hidden">
+    <Card ref="tooltipRef" v-show="tooltipActive"
+          style="width: 15rem; overflow: hidden; position: absolute; top: 0; right: 50px" class="relative"
+    >
       <template #header>
       </template>
-      <template #title>Order</template>
-      <template #subtitle>Load</template>
+      <template #title>Order: {{ tooltipData?.value?.id }}</template>
+      <template #subtitle>Load : {{ tooltipData?.value?.loadData?.id }}</template>
       <template #content>
-        <p class="m-0">
-          {{ tooltipData }}
-        </p>
+        <div>
+          <div class="flex justify-between">
+            <Button icon="pi pi-angle-double-up" @click="moveOrderBar('up')" />
+            <Button icon="pi pi-arrow-up" severity="secondary" outlined @click="moveBarByOnePosition('up')" />
+            <Button icon="pi pi-arrow-down" severity="secondary" outlined @click="moveBarByOnePosition('down')" />
+            <Button icon="pi pi-angle-double-down" @click="moveOrderBar('down')" />
+          </div>
+          <p class="m-0">
+            time: {{ tooltipData?.value?.loadData?.nested?.time }}
+          </p>
+          <div>
+            <InputText type="text" v-model="timeUpdateInput" @change="updateTime" />
+          </div>
+
+        </div>
       </template>
       <template #footer>
         <div class="flex gap-4 mt-1">
-          <Button label="Cancel" severity="secondary" outlined class="w-full" />
-          <Button label="Save" class="w-full" />
+          <Button label="Cancel" severity="secondary" outlined
+                  @click="toogleTooltip()"
+          />
+
+          <Button icon="pi pi-thumbtack" label="show" raised
+                  @click="activateBarsFromTooltip()"
+          />
         </div>
       </template>
     </Card>
     <div class="flex w-100">
-      <!--      <Chart ref="chartMain" type="bar" :data="chartData" :options="chartOptions" class="h-[30rem] w-1/2" />-->
-      <!--      <Chart ref="chartSimulation" type="bar" :data="chartData" :options="chartOptions" class="h-[30rem] w-1/2" />-->
     </div>
-    <div class="w-20 ml-10">
-      <Button icon="pi pi-times" raised @click="resetZoom">Reset</Button>
-      <Button icon="pi pi-times" raised @click="changeDataSetItem" />
+    <div class=" card ml-10 flex gap-4 ">
+      <Button icon="pi pi-times w-full " label="Reset" raised @click="resetZoom" />
+      <Button icon="pi pi-bolt w-full " raised @click="changeDataSetItem" />
+      <Button icon="pi pi-thumbtack w-full " label="Activate" raised @click="activateBarsFromOneOrder(0)" />
+      <Button icon="pi pi-undo w-full " label="Generate" raised @click="updateChartData" />
     </div>
   </div>
 </template>
@@ -35,25 +53,56 @@ import Chart from 'primevue/chart'
 import { ref, onMounted, reactive, shallowRef } from 'vue'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
-import { dataSetStacking } from '../composables/chartConfig.ts'
+import InputText from 'primevue/inputtext'
+import { generateChartDataSets, moveObjectToIndex, sortBy } from '../composables/chartConfig.ts'
 import { calculateDayTimeLines } from '../composables/time.ts'
 
 onMounted(() => {
-  chartData.value = setChartData()
+  updateChartData()
   chartOptions.value = setChartOptions()
 
 })
 
+const updateChartData = () => {
+  chartData.value = setChartData()
+}
+const timeUpdateInput = ref()
 const chartMain = ref()
 const tooltipRef = ref()
 const chartData = shallowRef()
 const chartOptions = ref()
 const tooltipActive = ref(false)
-const tooltipData = reactive({ position: { x: 0, y: 0 }, id: undefined, title: undefined })
+const tooltipData = reactive({ position: undefined, datasetIndex: undefined, id: undefined, loadData: undefined })
 
 const resetZoom = () => {
   const chart = chartMain.value.getChart()
   chart.resetZoom()
+}
+
+const updateTime = () => {
+  const chart = chartMain.value.getChart()
+  const { datasetIndex, loadData } = tooltipData.value
+  console.log('datasetIndex', chartData.value.datasets[datasetIndex])
+  const findIndex = chartData.value.datasets[datasetIndex].data.findIndex((item) => item.id === loadData.id)
+  chartData.value.datasets[datasetIndex].data[findIndex].nested.time = timeUpdateInput.value
+  timeUpdateInput.value = ''
+
+  chart.update()
+}
+
+const moveOrderBar = (direction: 'down' | 'up' = 'down') => {
+  const chart = chartMain.value.getChart()
+  const { id } = tooltipData.value
+  chartData.value.datasets = sortBy(chartData.value.datasets, id, 'orderId', direction)
+  chart.update()
+}
+
+const moveBarByOnePosition = (direction: 'down' | 'up') => {
+  const chart = chartMain.value.getChart()
+  const { datasetIndex, id } = tooltipData.value
+  const newIndex = direction === 'down' ? datasetIndex + 1 : datasetIndex - 1
+  chartData.value.datasets = moveObjectToIndex([...chartData.value.datasets], datasetIndex, newIndex)
+  chart.update()
 }
 
 const changeDataSetItem = () => {
@@ -61,50 +110,51 @@ const changeDataSetItem = () => {
   chartData.value.datasets[2].data[10] = 0
   chart.update()
 }
-const dataSetsDefault = [
-  {
-    type: 'bar',
-    label: 'Order 1',
-    backgroundColor: '#798ef8',
-    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 25, 12, 48, 90, 76, 42, 20, 45, 20, 35, 15, 50, 45, 35, 50, 25, 12, 48, 90, 76, 42, 20, 45, 20, 35, 15, 50, 45, 35],
-  },
-  {
-    type: 'bar',
-    label: 'Order 2',
-    backgroundColor: '#798ef8',
-    data: [0, 0, 0, 0, 0, 0, 5, 21, 84, 24, 75, 37, 65, 34, 20, 45, 20, 35, 48, 90, 76, 42],
-  },
-  {
-    type: 'bar',
-    label: 'Order 3',
-    backgroundColor: '#798ef8',
-    data: [0, 0, 0, 0, 0, 0, 15, 41, 52, 24, 74, 23, 21, 32, 20, 45, 20, 35, 41, 52, 24, 74],
-  },
-]
+
+const toogleTooltip = () => {
+  tooltipActive.value = !tooltipActive.value
+}
 
 const setChartData = () => {
-  const documentStyle = getComputedStyle(document.documentElement)
-
-  const isUsedDefaultDataSet = true
   return {
     labels: calculateDayTimeLines(),
-    datasets: isUsedDefaultDataSet ? dataSetsDefault : dataSetStacking,
+    datasets: generateChartDataSets(),
   }
 }
 
-const showChartElementInteracted = (e) => {
+const showChartElementInteracted = (e): { selectedDatasetElement, orderId, datasetIndex } => {
   const chart = e.chart
   let elementsClicked = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true)
   if (elementsClicked.length === 0) {
-    return null
+    return { datasetIndex: null, orderId: null, selectedDatasetElement: null }
   }
   const { index, datasetIndex } = elementsClicked[0]
   const selectedDatasetElement = chartData.value.datasets[datasetIndex].data[index]
-  console.log('chartData.value.datasets', JSON.parse(JSON.stringify(chartData.value.datasets[datasetIndex].data[index])))
-  console.log('selectedDatasetElement', selectedDatasetElement)
-  return selectedDatasetElement
+  return { selectedDatasetElement, orderId: chartData.value.datasets[datasetIndex]?.orderId, datasetIndex }
 }
 
+const activateBarsFromTooltip = () => {
+  activateBarsFromOneOrder(tooltipData.value.datasetIndex, true)
+}
+
+const activateBarsFromOneOrder = (datasetIndex: number | null, chartUpdate = false) => {
+  console.log('datasetIndex')
+  if (!datasetIndex) {
+    const chart = chartMain.value.getChart()
+    chart.setActiveElements([])
+    chart.active = []
+    chartUpdate && chart.update()
+    return
+  }
+  const chart = chartMain.value.getChart()
+  const elementsInDataSet = chartData.value.datasets[datasetIndex].data.length
+  const activeElements = [...Array(elementsInDataSet)].map((_, index: number) => {
+    return { datasetIndex, index }
+  })
+
+  chart.setActiveElements(activeElements)
+  chartUpdate && chart.update()
+}
 const setChartOptions = () => {
   const chart = chartMain.value.getChart()
   const documentStyle = getComputedStyle(document.documentElement)
@@ -119,31 +169,39 @@ const setChartOptions = () => {
     barPercentage: 0.98,  // padding between bars
     events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
     onClick: (e) => {
+      console.log('click', e)
       tooltipActive.value = true
-      const selectedDataset = showChartElementInteracted(e)
-      if (!selectedDataset) return
-      tooltipData.value = { position: { x: 0, y: 0 }, id: 'id', title: selectedDataset }
-      const chart = chartMain.value.getChart()
-      chart.setActiveElements([{
-        datasetIndex: 0,
-        index: 11,
-      }, {
-        datasetIndex: 0,
-        index: 10,
-      }])
-      chart.update()
+      console.log('showChartElementInteracted(e)', showChartElementInteracted(e))
+      const selectedDatasetElement = showChartElementInteracted(e).selectedDatasetElement
+      const orderId = showChartElementInteracted(e).orderId
+      const datasetIndex = showChartElementInteracted(e).datasetIndex
+      if (!selectedDatasetElement) return
+      activateBarsFromOneOrder(datasetIndex)
+      tooltipData.value = {
+        position: { x: e.x, y: e.y },
+        datasetIndex: datasetIndex,
+        id: orderId,
+        loadData: selectedDatasetElement,
+      }
 
     },
     onHover: (e) => {
-      const selectedDataset = showChartElementInteracted(e)
-      if (!selectedDataset) return
-      console.log('hover', selectedDataset)
+      return
+      const selectedDatasetElement = showChartElementInteracted(e)?.selectedDatasetElement
+      const orderId = showChartElementInteracted(e)?.orderId
+      const datasetIndex = showChartElementInteracted(e)?.datasetIndex
+      if (!selectedDatasetElement || !orderId) {
+        activateBarsFromOneOrder(null)
+        return
+      }
+      tooltipData.value = { position: { x: 0, y: 0 }, id: orderId, loadData: selectedDatasetElement }
+      activateBarsFromOneOrder(datasetIndex)
     },
     plugins: {
       tooltip: {
         mode: 'index',
         enabled: false,
-        events: ['click', 'mousemove'],
+        events: ['click', 'mousemove', 'mouseout'],
         // external: tooltipRef,
         // onClick: (e) => {
         //   console.log('tooltip clicked', e);

@@ -10,6 +10,6 @@ export function calculateTimeLine(start: Moment, end: Moment): string[] {
 
 }
 
-export function calculateDayTimeLines() {
-  return calculateTimeLine(moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss'))
+export function calculateDayTimeLines(start= '00:00:00', end= '23:59:59'): string[] {
+  return calculateTimeLine(moment(start, 'HH:mm:ss'), moment( end, 'HH:mm:ss'))
 }
