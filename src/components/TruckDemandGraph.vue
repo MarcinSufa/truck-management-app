@@ -1,42 +1,44 @@
 <template>
   <div class="relative">
     <Chart ref="chartMain" type="bar" :data="chartData" :options="chartOptions" class="h-[30rem]" />
-    <Card ref="tooltipRef" v-show="tooltipActive"
-          style="width: 15rem; overflow: hidden; position: absolute; top: 0; right: 50px" class="relative"
-    >
-      <template #header>
-      </template>
-      <template #title>Order: {{ tooltipData?.value?.id }}</template>
-      <template #subtitle>Load : {{ tooltipData?.value?.loadData?.id }}</template>
-      <template #content>
-        <div>
-          <div class="flex justify-between">
-            <Button icon="pi pi-angle-double-up" @click="moveOrderBar('up')" />
-            <Button icon="pi pi-arrow-up" severity="secondary" outlined @click="moveBarByOnePosition('up')" />
-            <Button icon="pi pi-arrow-down" severity="secondary" outlined @click="moveBarByOnePosition('down')" />
-            <Button icon="pi pi-angle-double-down" @click="moveOrderBar('down')" />
-          </div>
-          <p class="m-0">
-            time: {{ tooltipData?.value?.loadData?.nested?.time }}
-          </p>
+    <transition name="fade" mode="out-in">
+      <Card ref="tooltipRef" v-show="tooltipActive"
+            style="width: 15rem; overflow: hidden; position: absolute; top: 0; left: 50px" class="relative"
+      >
+        <template #header>
+        </template>
+        <template #title>Order: {{ tooltipData?.value?.id }}</template>
+        <template #subtitle>Load : {{ tooltipData?.value?.loadData?.id }}</template>
+        <template #content>
           <div>
-            <InputText type="text" v-model="timeUpdateInput" @change="updateTime" />
+            <div class="flex justify-between">
+              <Button icon="pi pi-angle-double-up" @click="moveOrderBar('up')" />
+              <Button icon="pi pi-arrow-up" severity="secondary" outlined @click="moveBarByOnePosition('up')" />
+              <Button icon="pi pi-arrow-down" severity="secondary" outlined @click="moveBarByOnePosition('down')" />
+              <Button icon="pi pi-angle-double-down" @click="moveOrderBar('down')" />
+            </div>
+            <p class="m-0">
+              time: {{ tooltipData?.value?.loadData?.nested?.time }}
+            </p>
+            <div>
+              <InputText type="text" v-model="timeUpdateInput" @change="updateTime" />
+            </div>
+
           </div>
+        </template>
+        <template #footer>
+          <div class="flex gap-4 mt-1">
+            <Button label="Cancel" severity="secondary" outlined
+                    @click="toogleTooltip()"
+            />
 
-        </div>
-      </template>
-      <template #footer>
-        <div class="flex gap-4 mt-1">
-          <Button label="Cancel" severity="secondary" outlined
-                  @click="toogleTooltip()"
-          />
-
-          <Button icon="pi pi-thumbtack" label="show" raised
-                  @click="activateBarsFromTooltip()"
-          />
-        </div>
-      </template>
-    </Card>
+            <Button icon="pi pi-thumbtack" label="show" raised
+                    @click="activateBarsFromTooltip()"
+            />
+          </div>
+        </template>
+      </Card>
+    </transition>
     <div class="flex w-100">
     </div>
     <div class=" card ml-10 flex gap-4 ">
@@ -50,11 +52,11 @@
 
 <script setup lang="ts">
 import Chart from 'primevue/chart'
-import { ref, onMounted, reactive, shallowRef } from 'vue'
-import Card from 'primevue/card'
+import { onMounted, reactive, ref, shallowRef } from 'vue'
 import Button from 'primevue/button'
+import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
-import { generateChartDataSets, moveObjectToIndex, sortBy } from '../composables/chartConfig.ts'
+import { addExternalTooltip, generateChartDataSets, moveObjectToIndex, sortBy } from '../composables/chartConfig.ts'
 import { calculateDayTimeLines } from '../composables/time.ts'
 
 onMounted(() => {
@@ -92,16 +94,19 @@ const updateTime = () => {
 
 const moveOrderBar = (direction: 'down' | 'up' = 'down') => {
   const chart = chartMain.value.getChart()
-  const { id } = tooltipData.value
+  const { datasetIndex, id } = tooltipData.value
   chartData.value.datasets = sortBy(chartData.value.datasets, id, 'orderId', direction)
+  tooltipData.value.datasetIndex = chartData.value.datasets.findIndex((item) => item.orderId === id)
   chart.update()
 }
 
 const moveBarByOnePosition = (direction: 'down' | 'up') => {
+  const { datasetIndex } = tooltipData.value
+  if ((direction === 'down' && datasetIndex === 0) || (direction == 'up' && datasetIndex === chartData.value.datasets.length - 1)) return
   const chart = chartMain.value.getChart()
-  const { datasetIndex, id } = tooltipData.value
-  const newIndex = direction === 'down' ? datasetIndex + 1 : datasetIndex - 1
+  const newIndex = direction === 'down' ? datasetIndex - 1 : datasetIndex + 1
   chartData.value.datasets = moveObjectToIndex([...chartData.value.datasets], datasetIndex, newIndex)
+  tooltipData.value.datasetIndex = newIndex
   chart.update()
 }
 
@@ -155,6 +160,7 @@ const activateBarsFromOneOrder = (datasetIndex: number | null, chartUpdate = fal
   chart.setActiveElements(activeElements)
   chartUpdate && chart.update()
 }
+
 const setChartOptions = () => {
   const chart = chartMain.value.getChart()
   const documentStyle = getComputedStyle(document.documentElement)
@@ -202,7 +208,7 @@ const setChartOptions = () => {
         mode: 'index',
         enabled: false,
         events: ['click', 'mousemove', 'mouseout'],
-        // external: tooltipRef,
+        // external: addExternalTooltip,
         // onClick: (e) => {
         //   console.log('tooltip clicked', e);
         // }
@@ -274,3 +280,14 @@ const setChartOptions = () => {
 }
 
 </script>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
