@@ -1,10 +1,18 @@
 import { calculateDayTimeLines } from './time.ts'
 import moment from 'moment/moment'
 
-export function generateChartDataSets() {
+export type Order = {
+  label: string;
+  data: { id: number; nested: { load: number; time: string } }[];
+  backgroundColor: string;
+  orderId: number;
+  orderData: { orderDate: string; orderCode: number; orderType: string; customerCode: string; projectCode: string }
+}[]
+
+export function generateChartDataSets(): Order[] {
   const orders = []
   const orderCount = Math.floor(Math.random() * 35) + 3
-  const orderTypes = ['Regular Sale', '']
+  const orderTypes = ['Regular Sale', 'Credit Memo', 'Debit Memo', 'Material Transfer', 'Job Transfer', 'Review']
   const customers = ['HL Construction', 'Cemex', 'Lafarge', 'Vulcan', 'Martin Marietta', 'Heidelberg', 'CRH']
   const projects = ['DR-01', 'DR-02', 'DR-03', 'DR-04', 'DR-05', 'DR-06', 'DR-07', 'DR-08', 'DR-09', 'DR-10']
 
@@ -118,7 +126,8 @@ export const moveObjectToIndex = (arr, old_index, new_index) => {
       arr.push(undefined)
     }
   }
-  return arr.splice(new_index, 0, arr.splice(old_index, 1)[0])
+  arr.splice(new_index, 0, arr.splice(old_index, 1)[0])
+  return arr
 }
 
 export const addExternalTooltip = (context) => {

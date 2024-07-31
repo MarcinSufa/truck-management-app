@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <Chart ref="chartMain" type="bar" :data="chartData" :options="chartOptions" class="h-[30rem]" />
+    <Chart ref="chartMain" type="bar" :data="chartData" :options="chartOptions" class="h-[20rem]" />
     <transition name="fade" mode="out-in">
       <Card ref="tooltipRef" v-show="tooltipActive"
             style="width: 15rem; overflow: hidden; position: absolute; top: 0; left: 50px" class="relative"
@@ -41,23 +41,30 @@
     </transition>
     <div class="flex w-100">
     </div>
-    <div class=" card ml-10 flex gap-4 ">
+    <div class=" card ml-10 flex gap-4 my-4 ">
       <Button icon="pi pi-times w-full " label="Reset" raised @click="resetZoom" />
       <Button icon="pi pi-bolt w-full " raised @click="changeDataSetItem" />
       <Button icon="pi pi-thumbtack w-full " label="Activate" raised @click="activateBarsFromOneOrder(0)" />
       <Button icon="pi pi-undo w-full " label="Generate" raised @click="updateChartData" />
     </div>
+    <OrdersDataTable />
   </div>
 </template>
 
 <script setup lang="ts">
 import Chart from 'primevue/chart'
-import { onMounted, reactive, ref, shallowRef } from 'vue'
+import { computed, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
-import { addExternalTooltip, generateChartDataSets, moveObjectToIndex, sortBy } from '../composables/chartConfig.ts'
+import { moveObjectToIndex, sortBy } from '../composables/chartConfig.ts'
 import { calculateDayTimeLines } from '../composables/time.ts'
+import { useOrdersStore } from '../store'
+import OrdersDataTable from './OrdersDataTable.vue'
+
+const ordersStore = useOrdersStore()
+const orders = computed(() => ordersStore.orders)
+const selectedOrderIndex = computed(() => ordersStore.selectedOrderIndex)
 
 onMounted(() => {
   updateChartData()
@@ -66,8 +73,14 @@ onMounted(() => {
 })
 
 const updateChartData = () => {
+  ordersStore.fetchOrders()
   chartData.value = setChartData()
 }
+
+watch(selectedOrderIndex, (value) => {
+  activateBarsFromOneOrder(selectedOrderIndex.value, true)
+})
+
 const timeUpdateInput = ref()
 const chartMain = ref()
 const tooltipRef = ref()
@@ -123,7 +136,7 @@ const toogleTooltip = () => {
 const setChartData = () => {
   return {
     labels: calculateDayTimeLines(),
-    datasets: generateChartDataSets(),
+    datasets: orders.value,
   }
 }
 
@@ -144,7 +157,7 @@ const activateBarsFromTooltip = () => {
 
 const activateBarsFromOneOrder = (datasetIndex: number | null, chartUpdate = false) => {
   console.log('datasetIndex')
-  if (!datasetIndex) {
+  if (datasetIndex === null) {
     const chart = chartMain.value.getChart()
     chart.setActiveElements([])
     chart.active = []
@@ -162,7 +175,6 @@ const activateBarsFromOneOrder = (datasetIndex: number | null, chartUpdate = fal
 }
 
 const setChartOptions = () => {
-  const chart = chartMain.value.getChart()
   const documentStyle = getComputedStyle(document.documentElement)
   const textColor = documentStyle.getPropertyValue('--p-text-color')
   const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color')
