@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// import TrucksDataTable from './components/TrucksDataTable.vue'
 import { useStore } from './store'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
@@ -7,7 +6,6 @@ import { computed, onMounted, ref } from 'vue'
 import Card from 'primevue/card'
 import TruckForm from './components/TruckForm.vue'
 import Dialog from 'primevue/dialog'
-// import TruckDemandGraph from './components/TruckDemandGraph.vue'
 import { useRouter } from 'vue-router'
 import Menubar from 'primevue/menubar'
 

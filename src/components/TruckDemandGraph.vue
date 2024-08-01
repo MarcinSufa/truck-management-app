@@ -61,9 +61,12 @@ import { moveObjectToIndex, sortBy } from '../composables/chartConfig.ts'
 import { calculateDayTimeLines } from '../composables/time.ts'
 import { useOrdersStore } from '../store'
 import OrdersDataTable from './OrdersDataTable.vue'
+import { storeToRefs } from 'pinia'
 
 const ordersStore = useOrdersStore()
-const orders = computed(() => ordersStore.orders)
+
+const orders = computed(() => ordersStore.orders )
+const { isChartUpdate } = storeToRefs(ordersStore)
 const selectedOrderIndex = computed(() => ordersStore.selectedOrderIndex)
 
 onMounted(() => {
@@ -76,6 +79,12 @@ const updateChartData = () => {
   ordersStore.fetchOrders()
   chartData.value = setChartData()
 }
+
+watch(isChartUpdate, (value) => {
+  const chart = chartMain.value.getChart()
+  chart.update()
+  ordersStore.isChartUpdate = false
+})
 
 watch(selectedOrderIndex, (value) => {
   activateBarsFromOneOrder(selectedOrderIndex.value, true)
@@ -135,7 +144,7 @@ const toogleTooltip = () => {
 
 const setChartData = () => {
   return {
-    labels: calculateDayTimeLines(),
+    labels: calculateDayTimeLines('07:00:00', '23:59:59'),
     datasets: orders.value,
   }
 }
@@ -156,7 +165,6 @@ const activateBarsFromTooltip = () => {
 }
 
 const activateBarsFromOneOrder = (datasetIndex: number | null, chartUpdate = false) => {
-  console.log('datasetIndex')
   if (datasetIndex === null) {
     const chart = chartMain.value.getChart()
     chart.setActiveElements([])
@@ -165,7 +173,8 @@ const activateBarsFromOneOrder = (datasetIndex: number | null, chartUpdate = fal
     return
   }
   const chart = chartMain.value.getChart()
-  const elementsInDataSet = chartData.value.datasets[datasetIndex].data.length
+  const elementsInDataSet = chartData.value.datasets[datasetIndex]?.data?.length
+  if (elementsInDataSet === 0) return
   const activeElements = [...Array(elementsInDataSet)].map((_, index: number) => {
     return { datasetIndex, index }
   })

@@ -27,3 +27,6 @@ export type LoadData = {
   startLocation: string
   endLocation: string
 }
+
+export type OrderType = 'Regular Sale' | 'Credit Memo' | 'Debit Memo' | 'Material Transfer' | 'Job Transfer' | 'Review'
+export type OrderStatus = 'Will Call' | 'Weather Permitting' | 'Wait list' | 'Normal' | 'Hold Delivery' | 'Completed'

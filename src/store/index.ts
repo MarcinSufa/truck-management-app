@@ -4,6 +4,7 @@ import { Truck } from '../utils/types'
 import { useToast } from 'primevue/usetoast'
 import * as toast from '../composables/toast'
 import { generateChartDataSets, Order } from '../composables/chartConfig.ts'
+import { shallowRef } from 'vue'
 
 
 export const useStore = defineStore('main', {
@@ -93,19 +94,32 @@ export const useStore = defineStore('main', {
 
 export const useOrdersStore = defineStore('orders', {
   state: () => ({
-    orders: [] as Order[],
+    orders: shallowRef([]) as Order[],
     selectedOrderIndex: null as number,
     isFormVisible: false,
+    isChartUpdate: false
   }),
   actions: {
     fetchOrders() {
-      this.orders = generateChartDataSets();
+      this.orders = generateChartDataSets()
     },
     selectOrderIndex(orderId: number) {
       this.selectedOrderIndex = this.orders.findIndex((order) => order.orderId === orderId)
     },
     toggleForm() {
       this.isFormVisible = !this.isFormVisible
-    }
+    },
+    editOrderLoadData(data: Order) {
+      const orderId = data.orderId
+      const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
+      const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === data.id)
+      this.orders[indexOfOrder].data[indexOfLoad].nested.time = data['nested.time']
+      this.isChartUpdate = true;
+    },
   },
+  getters: {
+    ordersGetter: (state) => {
+      return shallowRef(state.orders)
+    }
+  }
 })
