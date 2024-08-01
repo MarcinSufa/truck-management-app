@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DataTable from 'primevue/datatable'
+import DataTable, { DataTableRowClickEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
 import Tag from 'primevue/tag'
 import IconField from 'primevue/iconfield'
@@ -11,6 +11,8 @@ import { useOrdersStore } from '../store'
 import Toast from 'primevue/toast'
 import { FilterMatchMode } from 'primevue/api'
 import { OrderStatus } from '../utils/types.ts'
+import ColorPicker from 'primevue/colorpicker'
+import { Order } from '../composables/chartConfig.ts'
 
 const ordersStore = useOrdersStore()
 const orders = computed(() => ordersStore.orders)
@@ -29,6 +31,18 @@ watch(selectedOrder, (value) => {
 const onRowEditSave = (event) => {
   let { newData } = event
   ordersStore.editOrderLoadData(newData)
+}
+const updateColor = (color: string, orderField: Order) => {
+  ordersStore.editOrderBackgroundColor(orderField, `#${color}`)
+}
+
+const setExpandedRow = ($event: DataTableRowClickEvent) => {
+  // check if row expanded before click of not
+  console.log($event.data)
+  const isExpanded = expandedRows.value.find((p) => p.orderId === $event.data.orderId)
+
+  if (isExpanded?.orderId) expandedRows.value = []
+  else expandedRows.value = [$event.data]
 }
 
 const getStatusLabel = (status: OrderStatus) => {
@@ -58,6 +72,7 @@ const getStatusLabel = (status: OrderStatus) => {
              selectionMode="single" :value="orders"
              tableStyle="min-width: 50rem;"
              scrollable scrollHeight="50rem"
+             @row-click="setExpandedRow"
   >
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-2">
@@ -85,18 +100,19 @@ const getStatusLabel = (status: OrderStatus) => {
       </template>
     </Column>
 
-    <Column field="orderData.orderCode" header="Code" sortable style="max-width: 8rem; overflow: hidden"
+    <Column field="orderData.orderCode" header="Code"
             class="truncate"
     ></Column>
     <Column field="orderData.projectCode" header="Project code" sortable style="width: 20%"></Column>
     <Column field="orderData.customerCode" header="Customer" style="width: 20%"></Column>
-    <Column :exportable="false" style="min-width:8rem">
+    <Column header="Color" :exportable="false" class="" style="min-width:8rem">
       <template #body="slotProps">
-        <Button icon="pi pi-pencil" outlined rounded class="mr-2" />
-        <Button icon="pi pi-trash" outlined rounded severity="danger"
+        <ColorPicker v-model="slotProps.data.backgroundColor" base-z-index="50"
+                     @update:model-value="(color: string) => updateColor(color, slotProps.data)" format="hex"
         />
       </template>
     </Column>
+
     <template #expansion="slotProps">
       <DataTable :value="slotProps.data.data"
                  tableStyle="min-width: 50rem;"

@@ -116,6 +116,12 @@ export const useOrdersStore = defineStore('orders', {
       this.orders[indexOfOrder].data[indexOfLoad].nested.time = data['nested.time']
       this.isChartUpdate = true;
     },
+    editOrderBackgroundColor(data: Order, color: string) {
+      const orderId = data.orderId
+      const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
+      this.orders[indexOfOrder].backgroundColor = color
+      this.isChartUpdate = true;
+    }
   },
   getters: {
     ordersGetter: (state) => {
