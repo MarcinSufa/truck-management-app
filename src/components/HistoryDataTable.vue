@@ -13,8 +13,8 @@ const ordersStore = useOrdersStore()
 const history = computed(() => ordersStore.history)
 
 const reverseChange = (data, index) => {
-  if(data.orderId)  {
-    ordersStore.revertHistoryTime(data.orderId, data.loadId, data.oldData, index)
+  if (data.orderId) {
+    ordersStore.revertHistory(data.orderId, data.loadId, data.oldData, index, data.type)
     return
   }
 }
@@ -45,8 +45,8 @@ const filters = ref({
 
     <Column field="orderId" header="Order Id" sortable style="max-width: 12rem; overflow: hidden"></Column>
     <Column field="description" header="Description" sortable />
-    <Column field="createTime" header="Created By"
-            class="truncate"
+    <Column field="createTime" header="Created On"
+            class="truncate" sortable
     ></Column>
     <Column header="Action">
       <template #body="{ data, index }">

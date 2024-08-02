@@ -24,6 +24,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.24.6",
     "@vitejs/plugin-vue": "^5.0.4",
+    "@vueuse/core": "^10.11.0",
     "autoprefixer": "^10.4.19",
     "eslint": "^9.3.0",
     "eslint-config-prettier": "^9.1.0",

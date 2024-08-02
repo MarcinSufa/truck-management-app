@@ -133,10 +133,16 @@ export const useOrdersStore = defineStore('orders', {
       const createTime = new Date().toLocaleString()
       this.history.push({ orderId, loadId, description, type, newData, oldData, createdBy, createTime })
     },
-    revertHistoryTime(orderId, loadId, oldData, index) {
+    revertHistory(orderId, loadId = null, oldData, index, key = null) {
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
-      const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === loadId)
-      this.orders[indexOfOrder].data[indexOfLoad].nested.time = oldData
+      if (loadId) {
+        const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === loadId)
+        this.orders[indexOfOrder].data[indexOfLoad].nested.time = oldData
+      }
+      if (key) {
+        this.orders[indexOfOrder][key] = oldData
+      }
+
       this.history = this.history.filter((change, i) => i !== index)
       this.isChartUpdate = true
     },
@@ -156,7 +162,7 @@ export const useOrdersStore = defineStore('orders', {
       const orderId = data.orderId
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
       const oldColor = JSON.parse(JSON.stringify(this.orders[indexOfOrder].backgroundColor))
-      this.addNewChangeToHistory(orderId, null, 'Edit Order Color', 'color', color, oldColor)
+      this.addNewChangeToHistory(orderId, null, 'Edit Order Color', 'backgroundColor', color, oldColor)
       this.changeColor(indexOfOrder, color)
       this.isChartUpdate = true
     },

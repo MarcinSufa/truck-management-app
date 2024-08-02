@@ -51,8 +51,10 @@
       </Card>
     </transition>
     <div class="flex gap-4">
-      <OrdersDataTable />
-      <HistoryDataTable v-show="history.length > 0" />
+      <transition-group name="fade" mode="out-in">
+        <OrdersDataTable />
+        <HistoryDataTable v-show="history.length > 0" />
+      </transition-group>
     </div>
 
   </div>

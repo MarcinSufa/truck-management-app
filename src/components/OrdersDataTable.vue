@@ -8,11 +8,11 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import { computed, ref, watch } from 'vue'
 import { useOrdersStore } from '../store'
-import Toast from 'primevue/toast'
 import { FilterMatchMode } from 'primevue/api'
 import { OrderStatus } from '../utils/types.ts'
 import ColorPicker from 'primevue/colorpicker'
 import { Order } from '../composables/chartConfig.ts'
+import { useDebounceFn } from "@vueuse/core"
 
 const ordersStore = useOrdersStore()
 const orders = computed(() => ordersStore.orders)
@@ -32,9 +32,10 @@ const onRowEditSave = (event) => {
   let { newData, data } = event
   ordersStore.editOrderLoadData(newData, data)
 }
-const updateColor = (color: string, orderField: Order, node) => {
+const updateColor = useDebounceFn((event: string, orderField: Order) => {
+  const color = event.value
   ordersStore.editOrderBackgroundColor(orderField, `#${color}`)
-}
+},500)
 
 const setExpandedRow = ($event: DataTableRowClickEvent) => {
   // check if row expanded before click of not
@@ -42,6 +43,10 @@ const setExpandedRow = ($event: DataTableRowClickEvent) => {
 
   if (isExpanded?.orderId) expandedRows.value = []
   else expandedRows.value = [$event.data]
+}
+
+const removeHash = (color: string) => {
+  return color.replace('#', '')
 }
 
 const getStatusLabel = (status: OrderStatus) => {
@@ -106,8 +111,10 @@ const getStatusLabel = (status: OrderStatus) => {
     <Column field="orderData.customerCode" header="Customer" style="width: 20%"></Column>
     <Column field="orderData.backgroundColor" header="Color" :exportable="false" class="" >
       <template #body="slotProps">
-        <ColorPicker v-model.lazy="slotProps.data.backgroundColor" :base-z-index="50"
-                     @update:model-value="(color: string) => updateColor(color, slotProps.data)" format="hex"
+        <ColorPicker :base-z-index="50"
+                     :model-value="removeHash(slotProps.data.backgroundColor)"
+                     @change="updateColor($event, slotProps.data)"
+                     format="hex"
         />
       </template>
     </Column>
