@@ -1,5 +1,16 @@
 <template>
   <div class="relative">
+    <div class=" card ml-10 flex gap-4 my-4 ">
+      <Button icon="pi pi-times w-full " label="Reset" raised @click="resetZoom" />
+      <Button icon="pi pi-bolt w-full " raised @click="changeDataSetItem" />
+      <Button icon="pi pi-thumbtack w-full " label="Activate" raised @click="activateBarsFromOneOrder(0)" />
+      <Button icon="pi pi-undo w-full " label="Generate" raised @click="updateChartData" />
+      <ToggleButton v-model="toggleSummaryOrdersView" @change="updateChartOptions" onLabel="Summary" offLabel="Details"
+                    onIcon="pi pi-lock"
+                    offIcon="pi pi-lock-open" class="w-36" aria-label="Do you confirm"
+      />
+    </div>
+
     <Chart ref="chartMain" type="bar" :data="chartData" :options="chartOptions" class="h-[20rem]" />
     <transition name="fade" mode="out-in">
       <Card ref="tooltipRef" v-show="tooltipActive"
@@ -39,15 +50,11 @@
         </template>
       </Card>
     </transition>
-    <div class="flex w-100">
+    <div class="flex gap-4">
+      <OrdersDataTable />
+      <HistoryDataTable v-show="history.length > 0" />
     </div>
-    <div class=" card ml-10 flex gap-4 my-4 ">
-      <Button icon="pi pi-times w-full " label="Reset" raised @click="resetZoom" />
-      <Button icon="pi pi-bolt w-full " raised @click="changeDataSetItem" />
-      <Button icon="pi pi-thumbtack w-full " label="Activate" raised @click="activateBarsFromOneOrder(0)" />
-      <Button icon="pi pi-undo w-full " label="Generate" raised @click="updateChartData" />
-    </div>
-    <OrdersDataTable />
+
   </div>
 </template>
 
@@ -62,10 +69,15 @@ import { calculateDayTimeLines } from '../composables/time.ts'
 import { useOrdersStore } from '../store'
 import OrdersDataTable from './OrdersDataTable.vue'
 import { storeToRefs } from 'pinia'
+import ToggleButton from 'primevue/togglebutton'
+import HistoryDataTable from './HistoryDataTable.vue'
 
 const ordersStore = useOrdersStore()
 
-const orders = computed(() => ordersStore.orders )
+const toggleSummaryOrdersView = ref(false)
+const orders = computed(() => ordersStore.orders)
+const history = computed(() => ordersStore.history)
+
 const { isChartUpdate } = storeToRefs(ordersStore)
 const selectedOrderIndex = computed(() => ordersStore.selectedOrderIndex)
 
@@ -77,7 +89,15 @@ onMounted(() => {
 
 const updateChartData = () => {
   ordersStore.fetchOrders()
+  ordersStore.generateAggregatedOrdersData()
   chartData.value = setChartData()
+}
+
+const updateChartOptions = (e) => {
+  const isSummaryChart = e.target.value
+  if (isSummaryChart) {
+
+  }
 }
 
 watch(isChartUpdate, (value) => {
@@ -106,7 +126,6 @@ const resetZoom = () => {
 const updateTime = () => {
   const chart = chartMain.value.getChart()
   const { datasetIndex, loadData } = tooltipData.value
-  console.log('datasetIndex', chartData.value.datasets[datasetIndex])
   const findIndex = chartData.value.datasets[datasetIndex].data.findIndex((item) => item.id === loadData.id)
   chartData.value.datasets[datasetIndex].data[findIndex].nested.time = timeUpdateInput.value
   timeUpdateInput.value = ''

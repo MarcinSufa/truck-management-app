@@ -29,16 +29,15 @@ watch(selectedOrder, (value) => {
 })
 
 const onRowEditSave = (event) => {
-  let { newData } = event
-  ordersStore.editOrderLoadData(newData)
+  let { newData, data } = event
+  ordersStore.editOrderLoadData(newData, data)
 }
-const updateColor = (color: string, orderField: Order) => {
+const updateColor = (color: string, orderField: Order, node) => {
   ordersStore.editOrderBackgroundColor(orderField, `#${color}`)
 }
 
 const setExpandedRow = ($event: DataTableRowClickEvent) => {
   // check if row expanded before click of not
-  console.log($event.data)
   const isExpanded = expandedRows.value.find((p) => p.orderId === $event.data.orderId)
 
   if (isExpanded?.orderId) expandedRows.value = []
@@ -67,11 +66,11 @@ const getStatusLabel = (status: OrderStatus) => {
 </script>
 
 <template>
-  <Toast />
   <DataTable v-model:expandedRows="expandedRows" v-model:filters="filters" v-model:selection="selectedOrder"
              selectionMode="single" :value="orders"
-             tableStyle="min-width: 50rem;"
+             tableStyle="width: 50rem;"
              scrollable scrollHeight="50rem"
+             class="pt-5"
              @row-click="setExpandedRow"
   >
     <template #header>
@@ -105,9 +104,9 @@ const getStatusLabel = (status: OrderStatus) => {
     ></Column>
     <Column field="orderData.projectCode" header="Project code" sortable style="width: 20%"></Column>
     <Column field="orderData.customerCode" header="Customer" style="width: 20%"></Column>
-    <Column header="Color" :exportable="false" class="" style="min-width:8rem">
+    <Column field="orderData.backgroundColor" header="Color" :exportable="false" class="" >
       <template #body="slotProps">
-        <ColorPicker v-model="slotProps.data.backgroundColor" base-z-index="50"
+        <ColorPicker v-model.lazy="slotProps.data.backgroundColor" :base-z-index="50"
                      @update:model-value="(color: string) => updateColor(color, slotProps.data)" format="hex"
         />
       </template>
@@ -115,7 +114,6 @@ const getStatusLabel = (status: OrderStatus) => {
 
     <template #expansion="slotProps">
       <DataTable :value="slotProps.data.data"
-                 tableStyle="min-width: 50rem;"
                  scrollable scrollHeight="50rem"
                  editMode="row"
                  v-model:editingRows="editingRows"
@@ -123,13 +121,13 @@ const getStatusLabel = (status: OrderStatus) => {
       >
         <Column field="id" header="id" sortable style=" overflow: hidden"></Column>
         <Column field="nested.load" header="load" sortable />
-        <Column field="nested.time" header="time" sortable style="width: 22%">
+        <Column field="nested.time" header="time" sortable >
           <template #editor="{ data, field }">
             <InputText v-model="data[field]" fluid />
           </template>
         </Column>
-        <Column field="nested.spacing" header="spacing" sortable style="width: 22%" />
-        <Column :rowEditor="true" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center"></Column>
+        <Column field="nested.spacing" header="spacing" sortable />
+        <Column :rowEditor="true" bodyStyle="text-align:center"></Column>
       </DataTable>
     </template>
 

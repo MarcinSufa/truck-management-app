@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import { Truck } from '../utils/types'
+import { HistoryChange, Truck } from '../utils/types'
 import { useToast } from 'primevue/usetoast'
 import * as toast from '../composables/toast'
 import { generateChartDataSets, Order } from '../composables/chartConfig.ts'
@@ -95,13 +95,32 @@ export const useStore = defineStore('main', {
 export const useOrdersStore = defineStore('orders', {
   state: () => ({
     orders: shallowRef([]) as Order[],
+    aggregatedOrders: [] as any[],
     selectedOrderIndex: null as number,
+    history: [] as HistoryChange[],
     isFormVisible: false,
-    isChartUpdate: false
+    isChartUpdate: false,
   }),
   actions: {
     fetchOrders() {
       this.orders = generateChartDataSets()
+    },
+    generateAggregatedOrdersData() {
+      const orders = this.orders
+      const aggregatedOrders = []
+      orders.forEach((order) => {
+        const orderData = order.orderData
+        const orderDataKeys = Object.keys(orderData)
+        const orderDataValues = Object.values(orderData)
+        const aggregatedOrder = orderDataKeys.map((key, index) => {
+          return {
+            key,
+            value: orderDataValues[index],
+          }
+        })
+        aggregatedOrders.push(aggregatedOrder)
+      })
+      this.aggregatedOrders = aggregatedOrders
     },
     selectOrderIndex(orderId: number) {
       this.selectedOrderIndex = this.orders.findIndex((order) => order.orderId === orderId)
@@ -109,23 +128,42 @@ export const useOrdersStore = defineStore('orders', {
     toggleForm() {
       this.isFormVisible = !this.isFormVisible
     },
-    editOrderLoadData(data: Order) {
+    addNewChangeToHistory(orderId, loadId, description, type, newData, oldData) {
+      const createdBy = 'User'
+      const createTime = new Date().toLocaleString()
+      this.history.push({ orderId, loadId, description, type, newData, oldData, createdBy, createTime })
+    },
+    revertHistoryTime(orderId, loadId, oldData, index) {
+      const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
+      const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === loadId)
+      this.orders[indexOfOrder].data[indexOfLoad].nested.time = oldData
+      this.history = this.history.filter((change, i) => i !== index)
+      this.isChartUpdate = true
+    },
+    editOrderLoadData(data: Order, oldData) {
       const orderId = data.orderId
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
       const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === data.id)
+      const oldTime = oldData.nested.time
+      this.addNewChangeToHistory(orderId, data.id, 'Edit Load Time', 'time', data['nested.time'], oldTime)
       this.orders[indexOfOrder].data[indexOfLoad].nested.time = data['nested.time']
-      this.isChartUpdate = true;
+      this.isChartUpdate = true
+    },
+    changeColor(indexOfOrder: number, color: string) {
+      this.orders[indexOfOrder].backgroundColor = color
     },
     editOrderBackgroundColor(data: Order, color: string) {
       const orderId = data.orderId
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
-      this.orders[indexOfOrder].backgroundColor = color
-      this.isChartUpdate = true;
-    }
+      const oldColor = JSON.parse(JSON.stringify(this.orders[indexOfOrder].backgroundColor))
+      this.addNewChangeToHistory(orderId, null, 'Edit Order Color', 'color', color, oldColor)
+      this.changeColor(indexOfOrder, color)
+      this.isChartUpdate = true
+    },
   },
   getters: {
     ordersGetter: (state) => {
       return shallowRef(state.orders)
-    }
-  }
+    },
+  },
 })
