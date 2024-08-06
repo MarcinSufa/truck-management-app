@@ -8,6 +8,7 @@ import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import { FilterMatchMode } from 'primevue/api'
+import ColorPicker from 'primevue/colorpicker'
 
 const ordersStore = useOrdersStore()
 const history = computed(() => ordersStore.history)
@@ -22,6 +23,16 @@ const reverseChange = (data, index) => {
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 })
+
+const icons = {
+  backgroundColor: 'pi pi-palette',
+  load: 'pi pi-truck',
+  time: 'pi pi-clock',
+}
+
+const getIconForChange = (field) => {
+  return icons[field]
+}
 </script>
 
 <template>
@@ -48,6 +59,38 @@ const filters = ref({
     <Column field="createTime" header="Created On"
             class="truncate" sortable
     ></Column>
+    <Column field="type" header="Field changed"
+            class="truncate"
+    >
+      <template #body="{ data }">
+        <span><i :class="getIconForChange(data.type)" class="mr-2" />{{ data.type }}</span>
+      </template>
+    </Column>
+    <Column header="Changed fields">
+      <template #body="{ data }">
+        <div class="flex items-center">
+          <div v-if="data.type === 'backgroundColor'">
+            <span>
+              <ColorPicker :base-z-index="50"
+                           :model-value="data.oldData"
+                           disabled
+                           format="hex"
+              />
+              <i class="pi pi-arrow-right mx-2" />
+              <ColorPicker :base-z-index="50"
+                           :model-value="data.newData"
+                           disabled
+                           format="hex"
+              />
+            </span>
+          </div>
+          <div v-else>
+            <span>{{ data.oldData }}<i class="pi pi-arrow-right mx-2" /> {{ data.newData }} </span>
+          </div>
+        </div>
+      </template>
+      >
+    </Column>
     <Column header="Action">
       <template #body="{ data, index }">
         <Button icon="pi pi-history" severity="secondary" raised @click="reverseChange(data, index)" />

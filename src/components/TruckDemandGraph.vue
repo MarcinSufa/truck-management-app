@@ -2,13 +2,11 @@
   <div class="relative">
     <div class=" card ml-10 flex gap-4 my-4 ">
       <Button icon="pi pi-times w-full " label="Reset" raised @click="resetZoom" />
-      <Button icon="pi pi-bolt w-full " raised @click="changeDataSetItem" />
-      <Button icon="pi pi-thumbtack w-full " label="Activate" raised @click="activateBarsFromOneOrder(0)" />
       <Button icon="pi pi-undo w-full " label="Generate" raised @click="updateChartData" />
-      <ToggleButton v-model="toggleSummaryOrdersView" @change="updateChartOptions" onLabel="Summary" offLabel="Details"
-                    onIcon="pi pi-lock"
-                    offIcon="pi pi-lock-open" class="w-36" aria-label="Do you confirm"
-      />
+<!--      <ToggleButton v-model="toggleSummaryOrdersView" @change="updateChartOptions" onLabel="Summary" offLabel="Details"-->
+<!--                    onIcon="pi pi-lock"-->
+<!--                    offIcon="pi pi-lock-open" class="w-36" aria-label="Do you confirm"-->
+<!--      />-->
     </div>
 
     <Chart ref="chartMain" type="bar" :data="chartData" :options="chartOptions" class="h-[20rem]" />
