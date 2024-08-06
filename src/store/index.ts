@@ -188,5 +188,8 @@ export const useOrdersStore = defineStore('orders', {
     ordersGetter: (state) => {
       return shallowRef(state.orders)
     },
+    ordersOverloaded: (state) => {
+      return state.orders.filter((order) => order.orderData.isOverloaded)
+    }
   },
 })

@@ -9,6 +9,7 @@ import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import { FilterMatchMode } from 'primevue/api'
 import ColorPicker from 'primevue/colorpicker'
+import { getHistoryItemTypeLabel } from '../composables/dataTableService.ts'
 
 const ordersStore = useOrdersStore()
 const history = computed(() => ordersStore.history)
@@ -33,6 +34,7 @@ const icons = {
 const getIconForChange = (field) => {
   return icons[field]
 }
+
 </script>
 
 <template>
@@ -53,6 +55,7 @@ const getIconForChange = (field) => {
         </div>
       </div>
     </template>
+    <template #empty> No Changes in history.</template>
 
     <Column field="orderId" header="Order Id" sortable style="max-width: 12rem; overflow: hidden"></Column>
     <Column field="description" header="Description" sortable />
@@ -63,7 +66,7 @@ const getIconForChange = (field) => {
             class="truncate"
     >
       <template #body="{ data }">
-        <span><i :class="getIconForChange(data.type)" class="mr-2" />{{ data.type }}</span>
+        <span><i :class="getIconForChange(data.type)" class="mr-2" />{{ getHistoryItemTypeLabel(data.type) }}</span>
       </template>
     </Column>
     <Column header="Changed fields">

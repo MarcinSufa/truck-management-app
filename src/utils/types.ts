@@ -29,7 +29,7 @@ export type LoadData = {
 }
 
 export type OrderType = 'Regular Sale' | 'Credit Memo' | 'Debit Memo' | 'Material Transfer' | 'Job Transfer' | 'Review'
-export type OrderStatus = 'Will Call' | 'Weather Permitting' | 'Wait list' | 'Normal' | 'Hold Delivery' | 'Completed'
+export type OrderStatus = 'Will Call' | 'Weather Permitting' | 'Wait list' | 'Normal' | 'Hold Delivery' | 'Completed' | 'Overloaded'
 
 export type HistoryChange = {
   oldData: string;

@@ -9,10 +9,10 @@ import Button from 'primevue/button'
 import { computed, ref, watch } from 'vue'
 import { useOrdersStore } from '../store'
 import { FilterMatchMode } from 'primevue/api'
-import { OrderStatus } from '../utils/types.ts'
 import ColorPicker from 'primevue/colorpicker'
 import { Order } from '../composables/chartConfig.ts'
 import { useDebounceFn } from '@vueuse/core'
+import { getStatusLabel } from '../composables/dataTableService.ts'
 
 const ordersStore = useOrdersStore()
 const orders = computed(() => ordersStore.orders)
@@ -47,25 +47,6 @@ const setExpandedRow = ($event: DataTableRowClickEvent) => {
 
 const removeHash = (color: string) => {
   return color.replace('#', '')
-}
-
-const getStatusLabel = (status: OrderStatus) => {
-  switch (status) {
-    case 'Will Call':
-      return 'warning'
-    case 'Weather Permitting':
-      return 'info'
-    case 'Wait list':
-      return 'warning'
-    case 'Normal':
-      return 'success'
-    case 'Hold Delivery':
-      return 'danger'
-    case 'Completed':
-      return 'success'
-    default:
-      return undefined
-  }
 }
 
 const moveOrderBar = (order: Order, direction: 'down' | 'up' = 'down') => {
@@ -123,7 +104,7 @@ const moveOrderBar = (order: Order, direction: 'down' | 'up' = 'down') => {
             class="truncate"
     ></Column>
     <Column field="orderData.projectCode" header="Project code" sortable style="width: 20%"></Column>
-    <Column field="orderData.customerCode" header="Customer" style="width: 20%"></Column>
+    <Column field="orderData.customerCode" header="Customer"></Column>
     <Column field="orderData.backgroundColor" header="Color" :exportable="false" class="">
       <template #body="slotProps">
         <ColorPicker :base-z-index="50"
@@ -144,16 +125,16 @@ const moveOrderBar = (order: Order, direction: 'down' | 'up' = 'down') => {
         <Column field="id" header="id" sortable style=" overflow: hidden"></Column>
         <Column field="nested.load" header="load" sortable>
           <template #editor="{ data, field }">
-            <InputText v-model="data[field]" fluid />
+            <InputText v-model="data[field]" fluid style="width: 4rem;" />
           </template>
         </Column>
         <Column field="nested.time" header="time" sortable>
           <template #editor="{ data, field }">
-            <InputText v-model="data[field]" fluid />
+            <InputText v-model="data[field]" fluid style="width: 4rem" />
           </template>
         </Column>
-        <Column field="nested.spacing" header="spacing" sortable />
-        <Column :rowEditor="true" bodyStyle="text-align:center"></Column>
+        <Column field="nested.spacing" header="spacing" sortable style="width: 6rem" />
+        <Column :rowEditor="true" bodyStyle="text-align:center" style="width: 20%"></Column>
       </DataTable>
     </template>
 

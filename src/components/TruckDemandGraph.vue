@@ -1,12 +1,12 @@
 <template>
   <div class="relative">
     <div class=" card ml-10 flex gap-4 my-4 ">
-      <Button icon="pi pi-times w-full " label="Reset" raised @click="resetZoom" />
+      <Button icon="pi pi-times w-full " label="Zoom" raised @click="resetZoom" />
       <Button icon="pi pi-undo w-full " label="Generate" raised @click="updateChartData" />
-<!--      <ToggleButton v-model="toggleSummaryOrdersView" @change="updateChartOptions" onLabel="Summary" offLabel="Details"-->
-<!--                    onIcon="pi pi-lock"-->
-<!--                    offIcon="pi pi-lock-open" class="w-36" aria-label="Do you confirm"-->
-<!--      />-->
+      <!--      <ToggleButton v-model="toggleSummaryOrdersView" @change="updateChartOptions" onLabel="Summary" offLabel="Details"-->
+      <!--                    onIcon="pi pi-lock"-->
+      <!--                    offIcon="pi pi-lock-open" class="w-36" aria-label="Do you confirm"-->
+      <!--      />-->
     </div>
 
     <Chart ref="chartMain" type="bar" :data="chartData" :options="chartOptions" class="h-[20rem]" />
@@ -52,8 +52,8 @@
       <OrdersDataTable />
       <div class="w-1/2 pt-5">
         <Menubar :model="menuItems" />
-        <HistoryDataTable v-if="history.length > 0 && activeMenuItem === 'history'" />
-        <div v-if="activeMenuItem === 'overloaded'">Orders Overloaded</div>
+        <OverloadedDataTable v-if="activeMenuItem === 'overloaded'" />
+        <HistoryDataTable v-if="activeMenuItem === 'history'" />
       </div>
     </div>
   </div>
@@ -70,30 +70,30 @@ import { calculateDayTimeLines } from '../composables/time.ts'
 import { useOrdersStore } from '../store'
 import OrdersDataTable from './OrdersDataTable.vue'
 import { storeToRefs } from 'pinia'
-import ToggleButton from 'primevue/togglebutton'
 import HistoryDataTable from './HistoryDataTable.vue'
 import Menubar from 'primevue/menubar'
+import OverloadedDataTable from './OverloadedDataTable.vue'
 
 const ordersStore = useOrdersStore()
 
 const toggleSummaryOrdersView = ref(false)
 const orders = computed(() => ordersStore.orders)
 const history = computed(() => ordersStore.history)
-const activeMenuItem = ref()
+const activeMenuItem = ref('overloaded')
 const menuItems = ref([
+  {
+    label: 'History',
+    icon: 'pi pi-star',
+    command: () => {
+      activeMenuItem.value = 'history'
+    },
+  },
   {
     label: 'Overloaded Orders',
     icon: 'pi pi-exclamation-triangle',
     command: () => {
       console.log('Overloaded Orders')
       activeMenuItem.value = 'overloaded'
-    },
-  },
-  {
-    label: 'History',
-    icon: 'pi pi-star',
-    command: () => {
-      activeMenuItem.value = 'history'
     },
   }])
 
@@ -202,7 +202,7 @@ const activateBarsFromTooltip = () => {
   activateBarsFromOneOrder(tooltipData.value.datasetIndex, true)
 }
 
-const activateBarsFromOneOrder = (datasetIndex: number | null, chartUpdate = false) => {
+const activateBarsFromOneOrder = (datasetIndex: number | null | undefined, chartUpdate = false) => {
   if (datasetIndex === null) {
     const chart = chartMain.value.getChart()
     chart.setActiveElements([])
@@ -234,9 +234,7 @@ const setChartOptions = () => {
     barPercentage: 0.98,  // padding between bars
     events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
     onClick: (e) => {
-      console.log('click', e)
       tooltipActive.value = true
-      console.log('showChartElementInteracted(e)', showChartElementInteracted(e))
       const selectedDatasetElement = showChartElementInteracted(e).selectedDatasetElement
       const orderId = showChartElementInteracted(e).orderId
       const datasetIndex = showChartElementInteracted(e).datasetIndex

@@ -16,7 +16,8 @@ export function generateChartDataSets(): Order[] {
   const orderCount = Math.floor(Math.random() * 35) + 3
   const orderTypes = ['Regular Sale', 'Credit Memo', 'Debit Memo', 'Material Transfer', 'Job Transfer', 'Review']
 
-  const orderStatuses = ['Will Call', 'Weather Permitting', 'Wait list', 'Normal', 'Hold Delivery', 'Completed']
+  //['Will Call', 'Weather Permitting', 'Wait list', 'Normal', 'Hold Delivery', 'Completed']
+  const orderStatuses = ['Normal']
   const customers = ['HL Construction', 'Cemex', 'Lafarge', 'Vulcan', 'Martin Marietta', 'Heidelberg', 'CRH']
   const projects = ['DR-01', 'DR-02', 'DR-03', 'DR-04', 'DR-05', 'DR-06', 'DR-07', 'DR-08', 'DR-09', 'DR-10']
   const aggregatedOrdersByTime = {}
@@ -44,15 +45,12 @@ export function generateChartDataSets(): Order[] {
       }
     })
 
-
-    console.log('aggregatedOrdersByTime', aggregatedOrdersByTime)
-
     orders.push({
       label: `Order ${i + 1}`,
       data: innerData,
       backgroundColor: isOverloaded ? orderOverloadColor : truckDemandColor,
       orderId,
-      orderStatus,
+      orderStatus: isOverloaded ? 'Overloaded' : orderStatus,
       orderData: {
         orderDate,
         orderCode,
