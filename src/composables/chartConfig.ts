@@ -9,6 +9,8 @@ export type Order = {
   orderData: { orderDate: string; orderCode: number; orderType: string; customerCode: string; projectCode: string }
 }[]
 
+export const PLANT_PRODUCTION = 300
+
 export function generateChartDataSets(): Order[] {
   const orders = []
   const orderCount = Math.floor(Math.random() * 35) + 3
@@ -17,8 +19,11 @@ export function generateChartDataSets(): Order[] {
   const orderStatuses = ['Will Call', 'Weather Permitting', 'Wait list', 'Normal', 'Hold Delivery', 'Completed']
   const customers = ['HL Construction', 'Cemex', 'Lafarge', 'Vulcan', 'Martin Marietta', 'Heidelberg', 'CRH']
   const projects = ['DR-01', 'DR-02', 'DR-03', 'DR-04', 'DR-05', 'DR-06', 'DR-07', 'DR-08', 'DR-09', 'DR-10']
+  const aggregatedOrdersByTime = {}
+  let isOverloaded = false
 
   for (let i = 0; i < orderCount; i++) {
+    isOverloaded = false
     const loadCount = Math.floor(Math.random() * 10) + 3
     const orderId = Math.floor(Math.random() * 100000)
     const orderType = orderTypes[Math.floor(Math.random() * orderTypes.length)]
@@ -27,10 +32,25 @@ export function generateChartDataSets(): Order[] {
     const project = projects[Math.floor(Math.random() * projects.length)]
     const orderDate = '2/14/2024'
     const orderCode = Math.floor(Math.random() * 1000)
+    const innerData = generateOrderData(loadCount, orderId)
+    for (let i = 0; i < innerData.length; i++) {
+      aggregatedOrdersByTime[innerData[i]?.nested?.time] = parseInt(innerData[i]?.nested?.load) + (aggregatedOrdersByTime[innerData[i]?.nested?.time] || 0)
+      aggregatedOrdersByTime[innerData?.nested?.time] > PLANT_PRODUCTION
+    }
+    //check if the order is overloaded
+    innerData.forEach((data) => {
+      if (aggregatedOrdersByTime[data.nested.time] > PLANT_PRODUCTION) {
+        isOverloaded = true
+      }
+    })
+
+
+    console.log('aggregatedOrdersByTime', aggregatedOrdersByTime)
+
     orders.push({
       label: `Order ${i + 1}`,
-      data: generateOrderData(loadCount, orderId),
-      backgroundColor: truckDemandColor,
+      data: innerData,
+      backgroundColor: isOverloaded ? orderOverloadColor : truckDemandColor,
       orderId,
       orderStatus,
       orderData: {
@@ -39,8 +59,10 @@ export function generateChartDataSets(): Order[] {
         orderType,
         customerCode: customer,
         projectCode: project,
+        isOverloaded: isOverloaded,
       },
     })
+
   }
   return orders
 }
@@ -78,7 +100,7 @@ function generateOrderData(orderCount: number, orderId: number) {
 
 
 const truckDemandColor = '#798ef8'
-// const ORDER_STATUS_NORMAL = 'Normal';
+const orderOverloadColor = '#fad993'
 
 const trucksData = [
   { id: '12456', nested: { load: 100, time: '08:15' } }, {

@@ -27,7 +27,7 @@ const filters = ref({
 <template>
   <DataTable selectionMode="single" :value="history" v-model:filters="filters"
              scrollable scrollHeight="50rem"
-             class="pt-5 w-1/2"
+             class="pt-5"
   >
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-2">

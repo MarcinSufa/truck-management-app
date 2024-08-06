@@ -137,7 +137,9 @@ export const useOrdersStore = defineStore('orders', {
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
       if (loadId) {
         const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === loadId)
-        this.orders[indexOfOrder].data[indexOfLoad].nested.time = oldData
+        if (key) {
+          this.orders[indexOfOrder].data[indexOfLoad].nested[key] = oldData
+        }
       }
       if (key) {
         this.orders[indexOfOrder][key] = oldData
@@ -151,8 +153,23 @@ export const useOrdersStore = defineStore('orders', {
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
       const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === data.id)
       const oldTime = oldData.nested.time
-      this.addNewChangeToHistory(orderId, data.id, 'Edit Load Time', 'time', data['nested.time'], oldTime)
-      this.orders[indexOfOrder].data[indexOfLoad].nested.time = data['nested.time']
+      const oldLoad = oldData.nested.load
+      if (data['nested.time']) {
+        this.addNewChangeToHistory(orderId, data.id, 'Edit Load Time', 'time', data['nested.time'], oldTime)
+        this.orders[indexOfOrder].data[indexOfLoad].nested.time = data['nested.time']
+      }
+      if (data['nested.load']) {
+        this.addNewChangeToHistory(orderId, data.id, 'Edit Load Size', 'load', data['nested.load'], oldLoad)
+        this.orders[indexOfOrder].data[indexOfLoad].nested.load = data['nested.load']
+      }
+      this.isChartUpdate = true
+    },
+    moveOrderBar(orderId: number, direction: string) {
+      const oldIndex = this.orders.findIndex((order) => order.orderId === orderId)
+      const newIndex = direction === 'up' ? oldIndex - 1 : oldIndex + 1
+      const order = this.orders.splice(oldIndex, 1)[0]
+      this.orders.splice(newIndex, 0, order)
+
       this.isChartUpdate = true
     },
     changeColor(indexOfOrder: number, color: string) {

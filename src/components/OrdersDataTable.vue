@@ -12,7 +12,7 @@ import { FilterMatchMode } from 'primevue/api'
 import { OrderStatus } from '../utils/types.ts'
 import ColorPicker from 'primevue/colorpicker'
 import { Order } from '../composables/chartConfig.ts'
-import { useDebounceFn } from "@vueuse/core"
+import { useDebounceFn } from '@vueuse/core'
 
 const ordersStore = useOrdersStore()
 const orders = computed(() => ordersStore.orders)
@@ -35,7 +35,7 @@ const onRowEditSave = (event) => {
 const updateColor = useDebounceFn((event: string, orderField: Order) => {
   const color = event.value
   ordersStore.editOrderBackgroundColor(orderField, `#${color}`)
-},500)
+}, 500)
 
 const setExpandedRow = ($event: DataTableRowClickEvent) => {
   // check if row expanded before click of not
@@ -68,6 +68,10 @@ const getStatusLabel = (status: OrderStatus) => {
   }
 }
 
+const moveOrderBar = (order: Order, direction: 'down' | 'up' = 'down') => {
+  ordersStore.moveOrderBar(order.orderId, direction)
+}
+
 </script>
 
 <template>
@@ -93,6 +97,14 @@ const getStatusLabel = (status: OrderStatus) => {
       </div>
     </template>
 
+    <!--    <Column header="Action" style="width: 5rem">-->
+    <!--      <template #body="slotProps">-->
+    <!--        <div class="flex align-items-center justify-content-center gap-4">-->
+    <!--          <Button icon="pi pi-angle-double-up" severity="secondary" @click="moveOrderBar('up', slotProps.data)" />-->
+    <!--          <Button icon="pi pi-angle-double-down" severity="secondary" @click="moveOrderBar('down', slotProps.data)" />-->
+    <!--        </div>-->
+    <!--      </template>-->
+    <!--    </Column>-->
     <Column expander style="width: 5rem" />
     <Column field="orderId" header="Order Id" sortable style="max-width: 12rem; overflow: hidden"></Column>
     <Column field="orderData.orderType" header="Type" sortable />
@@ -100,6 +112,9 @@ const getStatusLabel = (status: OrderStatus) => {
       <template #body="slotProps">
         <div class="flex items-center">
           <Tag :value="slotProps.data.orderStatus" :severity="getStatusLabel(slotProps.data.orderStatus)" />
+          <i v-if="slotProps.data.orderData.isOverloaded" style="color: orange"
+             class="pi pi-exclamation-triangle ml-3"
+          />
         </div>
       </template>
     </Column>
@@ -109,7 +124,7 @@ const getStatusLabel = (status: OrderStatus) => {
     ></Column>
     <Column field="orderData.projectCode" header="Project code" sortable style="width: 20%"></Column>
     <Column field="orderData.customerCode" header="Customer" style="width: 20%"></Column>
-    <Column field="orderData.backgroundColor" header="Color" :exportable="false" class="" >
+    <Column field="orderData.backgroundColor" header="Color" :exportable="false" class="">
       <template #body="slotProps">
         <ColorPicker :base-z-index="50"
                      :model-value="removeHash(slotProps.data.backgroundColor)"
@@ -127,8 +142,12 @@ const getStatusLabel = (status: OrderStatus) => {
                  @row-edit-save="onRowEditSave"
       >
         <Column field="id" header="id" sortable style=" overflow: hidden"></Column>
-        <Column field="nested.load" header="load" sortable />
-        <Column field="nested.time" header="time" sortable >
+        <Column field="nested.load" header="load" sortable>
+          <template #editor="{ data, field }">
+            <InputText v-model="data[field]" fluid />
+          </template>
+        </Column>
+        <Column field="nested.time" header="time" sortable>
           <template #editor="{ data, field }">
             <InputText v-model="data[field]" fluid />
           </template>

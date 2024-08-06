@@ -51,12 +51,13 @@
       </Card>
     </transition>
     <div class="flex gap-4">
-      <transition-group name="fade" mode="out-in">
-        <OrdersDataTable />
-        <HistoryDataTable v-show="history.length > 0" />
-      </transition-group>
+      <OrdersDataTable />
+      <div class="w-1/2 pt-5">
+        <Menubar :model="menuItems" />
+        <HistoryDataTable v-if="history.length > 0 && activeMenuItem === 'history'" />
+        <div v-if="activeMenuItem === 'overloaded'">Orders Overloaded</div>
+      </div>
     </div>
-
   </div>
 </template>
 
@@ -66,19 +67,37 @@ import { computed, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
-import { moveObjectToIndex, sortBy } from '../composables/chartConfig.ts'
+import { moveObjectToIndex, PLANT_PRODUCTION, sortBy } from '../composables/chartConfig.ts'
 import { calculateDayTimeLines } from '../composables/time.ts'
 import { useOrdersStore } from '../store'
 import OrdersDataTable from './OrdersDataTable.vue'
 import { storeToRefs } from 'pinia'
 import ToggleButton from 'primevue/togglebutton'
 import HistoryDataTable from './HistoryDataTable.vue'
+import Menubar from 'primevue/menubar'
 
 const ordersStore = useOrdersStore()
 
 const toggleSummaryOrdersView = ref(false)
 const orders = computed(() => ordersStore.orders)
 const history = computed(() => ordersStore.history)
+const activeMenuItem = ref()
+const menuItems = ref([
+  {
+    label: 'Overloaded Orders',
+    icon: 'pi pi-exclamation-triangle',
+    command: () => {
+      console.log('Overloaded Orders')
+      activeMenuItem.value = 'overloaded'
+    },
+  },
+  {
+    label: 'History',
+    icon: 'pi pi-star',
+    command: () => {
+      activeMenuItem.value = 'history'
+    },
+  }])
 
 const { isChartUpdate } = storeToRefs(ordersStore)
 const selectedOrderIndex = computed(() => ordersStore.selectedOrderIndex)
@@ -137,7 +156,7 @@ const updateTime = () => {
 
 const moveOrderBar = (direction: 'down' | 'up' = 'down') => {
   const chart = chartMain.value.getChart()
-  const { datasetIndex, id } = tooltipData.value
+  const { id } = tooltipData.value
   chartData.value.datasets = sortBy(chartData.value.datasets, id, 'orderId', direction)
   tooltipData.value.datasetIndex = chartData.value.datasets.findIndex((item) => item.orderId === id)
   chart.update()
@@ -279,9 +298,9 @@ const setChartOptions = () => {
           line1: {
             type: 'line',
             yMin:
-              100,
+            PLANT_PRODUCTION,
             yMax:
-              100,
+            PLANT_PRODUCTION,
             borderColor:
               'rgb(220 38 38)',
             borderWidth:
