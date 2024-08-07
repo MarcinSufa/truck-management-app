@@ -4,7 +4,6 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config' // core css
 import 'primevue/resources/themes/aura-light-green/theme.css'
 import './style.css'
-// @ts-ignore
 import aura from './presets/aura'
 import { plugin } from '@formkit/vue'
 import myConfig from '../formkit.config'

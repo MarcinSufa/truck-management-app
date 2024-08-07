@@ -2,20 +2,21 @@
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { computed, ref } from 'vue'
-import { useOrdersStore } from '../store'
+import { useOrdersStore } from '@/store'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import { FilterMatchMode } from 'primevue/api'
 import ColorPicker from 'primevue/colorpicker'
-import { getHistoryItemTypeLabel } from '../composables/dataTableService.ts'
-import { IconForPropType } from '../utils/types.ts'
+import { getHistoryItemTypeLabel } from '@/composables/dataTableService'
+import { type IconForPropType } from '@/utils/types'
+import { Order } from '@/composables/chartConfig'
 
 const ordersStore = useOrdersStore()
 const history = computed(() => ordersStore.history)
 
-const reverseChange = (data, index) => {
+const reverseChange = (data: Order, index) => {
   if (data.orderId) {
     ordersStore.revertHistory(data.orderId, data.loadId, data.oldData, index, data.type)
     return

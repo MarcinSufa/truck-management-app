@@ -68,7 +68,6 @@ const getTrackStatusLabel = computed(() => {
 
   <FormKit
       id='truck'
-      v-slot='{ value: formData }'
       type='form'
       :value="truckDataValue"
       form-class='fk-univ-app p-4'

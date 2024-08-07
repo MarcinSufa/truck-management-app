@@ -4,10 +4,10 @@ import Column from 'primevue/column';
 import Tag from 'primevue/tag';
 import Button from "primevue/button";
 import {computed, ref} from 'vue'
-import {useStore} from "../store";
+import {useStore} from '@/store';
 import Dialog from "primevue/dialog";
 import Toast from "primevue/toast";
-import {truckStatusData} from "../utils/truck-utils";
+import {truckStatusData} from '@/utils/truck-utils';
 import notFound from '../assets/images/truck-not-found.jpg'
 import truck from '../assets/images/truck.gif'
 

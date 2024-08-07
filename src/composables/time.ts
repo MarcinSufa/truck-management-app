@@ -1,4 +1,4 @@
-import moment, { Moment } from 'moment'
+import moment, { type Moment } from 'moment'
 
 export function calculateTimeLine(start: Moment, end: Moment): string[] {
   const timeSeries: string[] = []

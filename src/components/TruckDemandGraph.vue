@@ -65,8 +65,8 @@ import { computed, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
-import { moveObjectToIndex, PLANT_PRODUCTION, sortBy } from '../composables/chartConfig.ts'
-import { calculateDayTimeLines } from '../composables/time.ts'
+import { moveObjectToIndex, PLANT_PRODUCTION, sortBy } from '../composables/chartConfig'
+import { calculateDayTimeLines } from '../composables/time'
 import { useOrdersStore } from '../store'
 import OrdersDataTable from './OrdersDataTable.vue'
 import { storeToRefs } from 'pinia'
@@ -76,9 +76,8 @@ import OverloadedDataTable from './OverloadedDataTable.vue'
 
 const ordersStore = useOrdersStore()
 
-const toggleSummaryOrdersView = ref(false)
+const isHoverActive = ref(false)
 const orders = computed(() => ordersStore.orders)
-const history = computed(() => ordersStore.history)
 const activeMenuItem = ref('overloaded')
 const menuItems = ref([
   {
@@ -111,20 +110,13 @@ const updateChartData = () => {
   chartData.value = setChartData()
 }
 
-const updateChartOptions = (e) => {
-  const isSummaryChart = e.target.value
-  if (isSummaryChart) {
-
-  }
-}
-
-watch(isChartUpdate, (value) => {
+watch(isChartUpdate, () => {
   const chart = chartMain.value.getChart()
   chart.update()
   ordersStore.isChartUpdate = false
 })
 
-watch(selectedOrderIndex, (value) => {
+watch(selectedOrderIndex, () => {
   activateBarsFromOneOrder(selectedOrderIndex.value, true)
 })
 
@@ -166,12 +158,6 @@ const moveBarByOnePosition = (direction: 'down' | 'up') => {
   const newIndex = direction === 'down' ? datasetIndex - 1 : datasetIndex + 1
   chartData.value.datasets = moveObjectToIndex([...chartData.value.datasets], datasetIndex, newIndex)
   tooltipData.value.datasetIndex = newIndex
-  chart.update()
-}
-
-const changeDataSetItem = () => {
-  const chart = chartMain.value.getChart()
-  chartData.value.datasets[2].data[10] = 0
   chart.update()
 }
 
@@ -248,7 +234,7 @@ const setChartOptions = () => {
 
     },
     onHover: (e) => {
-      return
+      if(isHoverActive.value) {
       const selectedDatasetElement = showChartElementInteracted(e)?.selectedDatasetElement
       const orderId = showChartElementInteracted(e)?.orderId
       const datasetIndex = showChartElementInteracted(e)?.datasetIndex
@@ -258,6 +244,7 @@ const setChartOptions = () => {
       }
       tooltipData.value = { position: { x: 0, y: 0 }, id: orderId, loadData: selectedDatasetElement }
       activateBarsFromOneOrder(datasetIndex)
+      }
     },
     plugins: {
       tooltip: {

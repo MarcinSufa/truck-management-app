@@ -5,7 +5,7 @@ export default {
     header: {
         class: ['rounded-[4px]', 'outline-none']
     },
-    headercontent: ({ context, instance }) => ({
+    headercontent: ({ context }) => ({
         class: [
             // Shape
             'rounded-[4px]',

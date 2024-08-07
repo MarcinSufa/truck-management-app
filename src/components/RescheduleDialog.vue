@@ -3,8 +3,8 @@ import { useOrdersStore } from '../store'
 import Dialog from 'primevue/dialog'
 import { computed, onMounted, ref, shallowRef } from 'vue'
 import Chart from 'primevue/chart'
-import { PLANT_PRODUCTION, setChartOptions } from '../composables/chartConfig.ts'
-import { calculateDayTimeLines } from '../composables/time.ts'
+import { PLANT_PRODUCTION, setChartOptions } from '@/composables/chartConfig'
+import { calculateDayTimeLines } from '@/composables/time'
 
 const ordersStore = useOrdersStore()
 const isRescheduleDialog = computed({

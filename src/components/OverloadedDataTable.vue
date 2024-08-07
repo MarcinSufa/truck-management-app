@@ -2,13 +2,13 @@
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { computed, ref, watch } from 'vue'
-import { useOrdersStore } from '../store'
+import { useOrdersStore } from '@/store'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import { FilterMatchMode } from 'primevue/api'
 import Tag from 'primevue/tag'
-import { getStatusLabel } from '../composables/dataTableService.ts'
+import { getStatusLabel } from '@/composables/dataTableService'
 
 const ordersStore = useOrdersStore()
 const overloadedOrders = computed(() => ordersStore.ordersOverloaded)

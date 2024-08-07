@@ -1,4 +1,4 @@
-import { OrderStatus } from '../utils/types.ts'
+import { type OrderStatus } from '@/utils/types'
 
 export const getStatusLabel = (status: OrderStatus) => {
   switch (status) {

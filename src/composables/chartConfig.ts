@@ -143,10 +143,10 @@ export const dataSetsDefault = [
 ]
 
 export const sortBy = (arr, val, prop, direction: 'down' | 'up' = 'down') => {
-  let top = []
-  let rest = []
+  const top = []
+  const rest = []
 
-  for (let el of arr) {
+  for (const el of arr) {
     if (el[prop] == val) {
       top.push(el)
     } else {
@@ -220,7 +220,7 @@ export const addExternalTooltip = (context) => {
     })
     innerHtml += '</tbody>'
 
-    let tableRoot = tooltipEl.querySelector('table')
+    const tableRoot = tooltipEl.querySelector('table')
     tableRoot.innerHTML = innerHtml
   }
 
@@ -268,8 +268,7 @@ export const setChartOptions = () => {
       )
 
     },
-    onHover: (e) => {
-      // console.log('hover', e)
+    onHover: () => {
     },
     plugins: {
       tooltip: {

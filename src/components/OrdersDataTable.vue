@@ -7,12 +7,12 @@ import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import { computed, ref, watch } from 'vue'
-import { useOrdersStore } from '../store'
+import { useOrdersStore } from '@/store'
 import { FilterMatchMode } from 'primevue/api'
 import ColorPicker from 'primevue/colorpicker'
-import { Order } from '../composables/chartConfig.ts'
+import { type Order } from '@/composables/chartConfig'
 import { useDebounceFn } from '@vueuse/core'
-import { getStatusLabel } from '../composables/dataTableService.ts'
+import { getStatusLabel } from '@/composables/dataTableService'
 
 const ordersStore = useOrdersStore()
 const orders = computed(() => ordersStore.orders)
@@ -56,9 +56,9 @@ const removeHash = (color: string) => {
   return color.replace('#', '')
 }
 
-const moveOrderBar = (order: Order, direction: 'down' | 'up' = 'down') => {
-  ordersStore.moveOrderBar(order.orderId, direction)
-}
+// const moveOrderBar = (order: Order, direction: 'down' | 'up' = 'down') => {
+//   ordersStore.moveOrderBar(order.orderId, direction)
+// }
 
 </script>
 

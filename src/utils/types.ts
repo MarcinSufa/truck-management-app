@@ -1,4 +1,4 @@
-import { Order } from '../composables/chartConfig.ts'
+import { type Order } from '@/composables/chartConfig'
 
 export type TruckStatus = 'LOADING' | 'TO_JOB' | 'AT_JOB' | 'RETURNING' | 'OUT_OF_SERVICE';
 

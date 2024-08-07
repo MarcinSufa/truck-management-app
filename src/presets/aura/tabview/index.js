@@ -8,7 +8,7 @@ export default {
             { 'overflow-hidden': props.scrollable }
         ]
     }),
-    navContent: ({ instance }) => ({
+    navContent: () => ({
         class: [
             // Overflow and Scrolling
             'overflow-y-hidden overscroll-contain',
@@ -109,7 +109,6 @@ export default {
                     'bg-surface-0 dark:bg-surface-900': parent.state.d_activeIndex !== context.index,
                     'text-surface-700 dark:text-surface-0/80': parent.state.d_activeIndex !== context.index,
 
-                    'bg-surface-0 dark:bg-surface-900': parent.state.d_activeIndex === context.index,
                     'border-primary': parent.state.d_activeIndex === context.index,
                     'text-primary': parent.state.d_activeIndex === context.index
                 },

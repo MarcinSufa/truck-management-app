@@ -199,7 +199,6 @@ export default {
             {
                 'text-surface-700 dark:text-white/80': !context.focused && !context.selected,
                 'bg-surface-200 dark:bg-surface-600/60': context.focused && !context.selected,
-                'text-surface-700 dark:text-white/80': context.focused && !context.selected,
 
                 'text-primary-highlight-inverse': context.selected,
                 'bg-primary-highlight': context.selected

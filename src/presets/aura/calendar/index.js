@@ -7,7 +7,7 @@ export default {
             'relative'
         ]
     },
-    input: ({ props, parent, context }) => ({
+    input: ({ props, parent }) => ({
         class: [
             // Display
             'flex flex-auto',

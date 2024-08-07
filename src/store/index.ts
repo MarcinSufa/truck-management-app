@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import { HistoryChange, Truck } from '../utils/types'
+import { type HistoryChange, type Truck } from '@/utils/types'
 import { useToast } from 'primevue/usetoast'
 import * as toast from '../composables/toast'
-import { generateChartDataSets, Order } from '../composables/chartConfig.ts'
+import { generateChartDataSets, type Order } from '@/composables/chartConfig'
 import { ref, shallowRef } from 'vue'
 
 
