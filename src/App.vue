@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { useStore } from './store'
 import Toast from 'primevue/toast'
-import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, ref } from 'vue'
 import Card from 'primevue/card'
 import TruckForm from './components/TruckForm.vue'
 import Dialog from 'primevue/dialog'
 import { useRouter } from 'vue-router'
 import Menubar from 'primevue/menubar'
+import RescheduleDialog from './components/RescheduleDialog.vue'
 
 const store = useStore()
-const toast = useToast()
 const router = useRouter()
 
 const isFormVisible = computed({
@@ -54,6 +53,7 @@ const menuItems = ref([
     <Menubar :model="menuItems" />
   </div>
   <Toast />
+  <RescheduleDialog />
   <Dialog v-model:visible="isFormVisible" modal header="Add Truck" :style="{ width: '25rem' }">
     <TruckForm />
   </Dialog>

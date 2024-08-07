@@ -44,7 +44,6 @@ export function generateChartDataSets(): Order[] {
         isOverloaded = true
       }
     })
-
     orders.push({
       label: `Order ${i + 1}`,
       data: innerData,
@@ -62,7 +61,7 @@ export function generateChartDataSets(): Order[] {
     })
 
   }
-  return orders
+  return { orders, aggregatedOrdersByTime }
 }
 
 function generateOrderData(orderCount: number, orderId: number) {
@@ -122,7 +121,7 @@ export const dataSetStacking = [{
 },
 ]
 
-const dataSetsDefault = [
+export const dataSetsDefault = [
   {
     type: 'bar',
     label: 'Order 1',
@@ -240,4 +239,109 @@ export const addExternalTooltip = (context) => {
   tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px'
   tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px'
   tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px'
+}
+
+export const setChartOptions = () => {
+  const documentStyle = getComputedStyle(document.documentElement)
+  const textColor = documentStyle.getPropertyValue('--p-text-color')
+  const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color')
+  const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color')
+
+  return {
+    maintainAspectRatio: false,
+    aspectRatio: 0.8,
+    categoryPercentage: 1.0, // padding between bars
+    barPercentage: 0.98,  // padding between bars
+    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
+    onClick: (e) => {
+      console.log('click', e)
+      const chart = e.chart
+      const event = e.native
+      console.log(
+        'on click',
+        chart.getElementsAtEventForMode(
+          event,
+          'nearest',
+          { intersect: true },
+          false,
+        ),
+      )
+
+    },
+    onHover: (e) => {
+      // console.log('hover', e)
+    },
+    plugins: {
+      tooltip: {
+        mode: 'index',
+        enabled: false,
+        events: ['click', 'mousemove', 'mouseout'],
+        // external: addExternalTooltip,
+        // onClick: (e) => {
+        //   console.log('tooltip clicked', e);
+        // }
+      },
+      legend: {
+        display: false,
+        labels: {
+          color: textColor,
+        },
+      },
+      zoom: {
+        zoom: {
+          wheel: {
+            enabled: true,
+          }
+          ,
+          pinch: {
+            enabled: true,
+          }
+          ,
+          mode: 'xy',
+        },
+      },
+      annotation: {
+        annotations: {
+          line1: {
+            type: 'line',
+            yMin:
+            PLANT_PRODUCTION,
+            yMax:
+            PLANT_PRODUCTION,
+            borderColor:
+              'rgb(220 38 38)',
+            borderWidth:
+              2,
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        stacked: true,
+        ticks: {
+          color: textColorSecondary,
+        },
+        grid: {
+          color: surfaceBorder,
+        },
+      },
+      y: {
+        stacked: true,
+        ticks: {
+          color: textColorSecondary,
+        },
+        grid: {
+          color: surfaceBorder,
+        },
+      },
+    },
+    parsing: {
+      xAxisKey: 'time',
+      yAxisKey: 'load',
+    },
+    layout: {
+      padding: 0,
+    },
+  }
 }

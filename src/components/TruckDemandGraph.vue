@@ -108,7 +108,6 @@ onMounted(() => {
 
 const updateChartData = () => {
   ordersStore.fetchOrders()
-  ordersStore.generateAggregatedOrdersData()
   chartData.value = setChartData()
 }
 

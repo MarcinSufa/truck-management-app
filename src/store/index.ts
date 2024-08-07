@@ -4,7 +4,7 @@ import { HistoryChange, Truck } from '../utils/types'
 import { useToast } from 'primevue/usetoast'
 import * as toast from '../composables/toast'
 import { generateChartDataSets, Order } from '../composables/chartConfig.ts'
-import { shallowRef } from 'vue'
+import { ref, shallowRef } from 'vue'
 
 
 export const useStore = defineStore('main', {
@@ -98,29 +98,16 @@ export const useOrdersStore = defineStore('orders', {
     aggregatedOrders: [] as any[],
     selectedOrderIndex: null as number,
     history: [] as HistoryChange[],
+    rescheduleOrder: ref({ orderId: null, id: null, load: null }),
+    isRescheduleDialog: ref(false),
     isFormVisible: false,
     isChartUpdate: false,
   }),
   actions: {
     fetchOrders() {
-      this.orders = generateChartDataSets()
-    },
-    generateAggregatedOrdersData() {
-      const orders = this.orders
-      const aggregatedOrders = []
-      orders.forEach((order) => {
-        const orderData = order.orderData
-        const orderDataKeys = Object.keys(orderData)
-        const orderDataValues = Object.values(orderData)
-        const aggregatedOrder = orderDataKeys.map((key, index) => {
-          return {
-            key,
-            value: orderDataValues[index],
-          }
-        })
-        aggregatedOrders.push(aggregatedOrder)
-      })
-      this.aggregatedOrders = aggregatedOrders
+      const { orders, aggregatedOrdersByTime } = generateChartDataSets()
+      this.orders = orders
+      this.aggregatedOrders = aggregatedOrdersByTime
     },
     selectOrderIndex(orderId: number) {
       this.selectedOrderIndex = this.orders.findIndex((order) => order.orderId === orderId)
@@ -132,6 +119,15 @@ export const useOrdersStore = defineStore('orders', {
       const createdBy = 'User'
       const createTime = new Date().toLocaleString()
       this.history.push({ orderId, loadId, description, type, newData, oldData, createdBy, createTime })
+    },
+    toggleRescheduleDialog(isVisible: boolean = false) {
+      if (!isVisible) {
+        this.rescheduleOrder = { orderId: null, id: null, load: null }
+      }
+      this.isRescheduleDialog = isVisible
+    },
+    updateRescheduleOrder(orderId, id, load) {
+      this.rescheduleOrder = { orderId, id, load }
     },
     revertHistory(orderId, loadId = null, oldData, index, key = null) {
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
@@ -190,6 +186,6 @@ export const useOrdersStore = defineStore('orders', {
     },
     ordersOverloaded: (state) => {
       return state.orders.filter((order) => order.orderData.isOverloaded)
-    }
+    },
   },
 })

@@ -1,3 +1,4 @@
+// @ts-ignore
 import type { FormKitNode } from '@formkit/core'
 
 /**

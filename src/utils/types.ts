@@ -1,3 +1,5 @@
+import { Order } from '../composables/chartConfig.ts'
+
 export type TruckStatus = 'LOADING' | 'TO_JOB' | 'AT_JOB' | 'RETURNING' | 'OUT_OF_SERVICE';
 
 export type Truck = {
@@ -29,14 +31,23 @@ export type LoadData = {
 }
 
 export type OrderType = 'Regular Sale' | 'Credit Memo' | 'Debit Memo' | 'Material Transfer' | 'Job Transfer' | 'Review'
-export type OrderStatus = 'Will Call' | 'Weather Permitting' | 'Wait list' | 'Normal' | 'Hold Delivery' | 'Completed' | 'Overloaded'
+export type OrderStatus =
+  'Will Call'
+  | 'Weather Permitting'
+  | 'Wait list'
+  | 'Normal'
+  | 'Hold Delivery'
+  | 'Completed'
+  | 'Overloaded'
 
 export type HistoryChange = {
-  oldData: string;
+  oldData: Order;
   orderId: number;
   createdBy: string;
   createTime: string;
   description: string;
-  type: string;
-  newData: string
+  type: IconForPropType;
+  newData: Order
 }
+
+export type IconForPropType = 'backgroundColor' | 'load' | 'time'

@@ -8,6 +8,7 @@ import './style.css'
 import aura from './presets/aura'
 import { plugin } from '@formkit/vue'
 import myConfig from '../formkit.config'
+import Tooltip from 'primevue/tooltip'
 
 import { Chart } from 'chart.js'
 import annotationPlugin from 'chartjs-plugin-annotation'
@@ -41,6 +42,7 @@ app.use(PrimeVue, {
   unstyled: true,
   pt: aura,
 })
+app.directive('tooltip', Tooltip)
 
 app.use(ToastService)
 app.use(plugin, myConfig)

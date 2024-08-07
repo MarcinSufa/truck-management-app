@@ -28,6 +28,13 @@ watch(selectedOrder, (value) => {
   ordersStore.selectOrderIndex(value?.orderId)
 })
 
+const toggleRescheduleDialog = (isToggle, orderData) => {
+  const { orderId, id } = orderData
+  const load = orderData.nested.load
+  ordersStore.updateRescheduleOrder(orderId, id, load)
+  ordersStore.toggleRescheduleDialog(true)
+}
+
 const onRowEditSave = (event) => {
   let { newData, data } = event
   ordersStore.editOrderLoadData(newData, data)
@@ -134,6 +141,16 @@ const moveOrderBar = (order: Order, direction: 'down' | 'up' = 'down') => {
           </template>
         </Column>
         <Column field="nested.spacing" header="spacing" sortable style="width: 6rem" />
+        <Column header="Action" style="width: 5rem">
+          <template #body="slotProps">
+            <div class="flex align-items-center justify-content-center gap-4">
+              <Button icon="pi pi-clock" severity="secondary"
+                      v-tooltip.top="{ value: 'Reschedule', showDelay: 600, hideDelay: 300 }"
+                      @click="toggleRescheduleDialog(true, slotProps.data)"
+              />
+            </div>
+          </template>
+        </Column>
         <Column :rowEditor="true" bodyStyle="text-align:center" style="width: 20%"></Column>
       </DataTable>
     </template>
