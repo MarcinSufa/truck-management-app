@@ -7,8 +7,7 @@ The form is integrated with the mock API available at the following address:
 
 http://qa-api-mock-3.eu-central-1.elasticbeanstalk.com/
 
-
-
+demo: https://marcinsufa.github.io/truck-management-app/
 
 
 ## Tech Stack
