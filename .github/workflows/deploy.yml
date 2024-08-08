@@ -15,11 +15,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install 🔧
-        run: yarn install
+      - name: Install pnpm 9.5.0
+        run: npm install -g @pnpm/exe@9.5.0
 
       - name: Build 🏗️
-        run: yarn build
+        run: pnpm build
         env:
           NODE_ENV: production
 
