@@ -2,9 +2,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config' // core css
-import 'primevue/resources/themes/aura-light-green/theme.css'
+import Aura from '@primevue/themes/aura';
 import './style.css'
-import aura from './presets/aura'
 import { plugin } from '@formkit/vue'
 import myConfig from '../formkit.config'
 import Tooltip from 'primevue/tooltip'
@@ -38,11 +37,14 @@ const router = createRouter({
 
 app.use(pinia)
 app.use(PrimeVue, {
-  unstyled: true,
-  pt: aura,
-})
+  theme: {
+    preset: Aura,
+    options: {
+      darkModeSelector: '.dark-mode'
+    }
+  }
+});
 app.directive('tooltip', Tooltip)
-
 app.use(ToastService)
 app.use(plugin, myConfig)
 app.use(router)

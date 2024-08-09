@@ -3,6 +3,9 @@
     <div class=" card ml-10 flex gap-4 my-4 ">
       <Button icon="pi pi-times w-full " label="Zoom" raised @click="resetZoom" />
       <Button icon="pi pi-undo w-full " label="Generate" raised @click="updateChartData" />
+      <Button type="button" @click="toggleDarkMode" rounded
+              :icon="{ 'pi pi-moon': isDarkTheme, 'pi pi-sun': !isDarkTheme }" severity="secondary"
+      />
       <!--      <ToggleButton v-model="toggleSummaryOrdersView" @change="updateChartOptions" onLabel="Summary" offLabel="Details"-->
       <!--                    onIcon="pi pi-lock"-->
       <!--                    offIcon="pi pi-lock-open" class="w-36" aria-label="Do you confirm"-->
@@ -73,9 +76,11 @@ import { storeToRefs } from 'pinia'
 import HistoryDataTable from './HistoryDataTable.vue'
 import Menubar from 'primevue/menubar'
 import OverloadedDataTable from './OverloadedDataTable.vue'
+import { usePrimeVue } from 'primevue/config'
+
 
 const ordersStore = useOrdersStore()
-
+const PrimeVue = usePrimeVue()
 const isHoverActive = ref(false)
 const orders = computed(() => ordersStore.orders)
 const activeMenuItem = ref('overloaded')
@@ -96,11 +101,22 @@ const menuItems = ref([
     },
   }])
 
+const isDarkTheme = computed(() => {
+  const element = document.querySelector('html')
+  return element.classList.contains('dark-mode')
+})
+
+const toggleDarkMode = () => {
+  const element = document.querySelector('html')
+  element.classList.toggle('dark-mode')
+}
+
 const { isChartUpdate } = storeToRefs(ordersStore)
 const selectedOrderIndex = computed(() => ordersStore.selectedOrderIndex)
 
 onMounted(() => {
   updateChartData()
+
   chartOptions.value = setChartOptions()
 
 })
@@ -234,16 +250,16 @@ const setChartOptions = () => {
 
     },
     onHover: (e) => {
-      if(isHoverActive.value) {
-      const selectedDatasetElement = showChartElementInteracted(e)?.selectedDatasetElement
-      const orderId = showChartElementInteracted(e)?.orderId
-      const datasetIndex = showChartElementInteracted(e)?.datasetIndex
-      if (!selectedDatasetElement || !orderId) {
-        activateBarsFromOneOrder(null)
-        return
-      }
-      tooltipData.value = { position: { x: 0, y: 0 }, id: orderId, loadData: selectedDatasetElement }
-      activateBarsFromOneOrder(datasetIndex)
+      if (isHoverActive.value) {
+        const selectedDatasetElement = showChartElementInteracted(e)?.selectedDatasetElement
+        const orderId = showChartElementInteracted(e)?.orderId
+        const datasetIndex = showChartElementInteracted(e)?.datasetIndex
+        if (!selectedDatasetElement || !orderId) {
+          activateBarsFromOneOrder(null)
+          return
+        }
+        tooltipData.value = { position: { x: 0, y: 0 }, id: orderId, loadData: selectedDatasetElement }
+        activateBarsFromOneOrder(datasetIndex)
       }
     },
     plugins: {

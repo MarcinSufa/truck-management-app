@@ -6,7 +6,7 @@ import { useOrdersStore } from '@/store'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import { FilterMatchMode } from 'primevue/api'
+import { FilterMatchMode } from '@primevue/core/api'
 import Tag from 'primevue/tag'
 import { getStatusLabel } from '@/composables/dataTableService'
 
