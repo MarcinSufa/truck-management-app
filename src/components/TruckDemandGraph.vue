@@ -101,14 +101,12 @@ const menuItems = ref([
     },
   }])
 
-const isDarkTheme = computed(() => {
-  const element = document.querySelector('html')
-  return element.classList.contains('dark-mode')
-})
+const isDarkTheme = ref(false)
 
 const toggleDarkMode = () => {
   const element = document.querySelector('html')
-  element.classList.toggle('dark-mode')
+  element.classList.toggle('dark-mode', !isDarkTheme.value)
+  isDarkTheme.value = element.classList.contains('dark-mode')
 }
 
 const { isChartUpdate } = storeToRefs(ordersStore)
