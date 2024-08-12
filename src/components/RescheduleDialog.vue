@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useOrdersStore } from '../store'
+import { useOrdersStore } from '@/store'
 import Dialog from 'primevue/dialog'
 import { computed, onMounted, ref, shallowRef } from 'vue'
 import Chart from 'primevue/chart'

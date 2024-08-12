@@ -1,19 +1,26 @@
-import { calculateDayTimeLines } from './time.ts'
+import { calculateDayTimeLines } from '@/composables/time'
 import moment from 'moment/moment'
 import { useOrdersStore } from '@/store'
-import type { ChartElement, RescheduleChartDataSet } from '@/utils/types'
+import type { AggregatedOrdersByTime, ChartElement, Color, RescheduleChartDataSet } from '@/utils/types'
 
 export type Order = {
   label: string;
   data: { id: number; nested: { load: number; time: string, spacing: number } }[];
-  backgroundColor: string;
+  backgroundColor: Color;
   orderId: number;
-  orderData: { orderDate: string; orderCode: number; orderType: string; customerCode: string; projectCode: string }
-}[]
+  orderData: {
+    orderDate: string;
+    orderCode: number;
+    orderType: string;
+    customerCode: string;
+    projectCode: string,
+    isOverloaded: boolean
+  };
+}
 
 export const PLANT_PRODUCTION = 300
 
-export function generateChartDataSets(): Order[] {
+export function generateChartDataSets(): { orders: Order[], aggregatedOrdersByTime: AggregatedOrdersByTime }{
   const orders = []
   const orderCount = Math.floor(Math.random() * 35) + 3
   const orderTypes = ['Regular Sale', 'Credit Memo', 'Debit Memo', 'Material Transfer', 'Job Transfer', 'Review']
@@ -22,7 +29,7 @@ export function generateChartDataSets(): Order[] {
   const orderStatuses = ['Normal']
   const customers = ['HL Construction', 'Cemex', 'Lafarge', 'Vulcan', 'Martin Marietta', 'Heidelberg', 'CRH']
   const projects = ['DR-01', 'DR-02', 'DR-03', 'DR-04', 'DR-05', 'DR-06', 'DR-07', 'DR-08', 'DR-09', 'DR-10']
-  const aggregatedOrdersByTime = {}
+  const aggregatedOrdersByTime: { [key in string]: number  } = {}
   let isOverloaded = false
 
   for (let i = 0; i < orderCount; i++) {

@@ -13,6 +13,7 @@ import ColorPicker from 'primevue/colorpicker'
 import { type Order } from '@/composables/chartConfig'
 import { useDebounceFn } from '@vueuse/core'
 import { getStatusLabel } from '@/composables/dataTableService'
+import type { EditLoadRow, EditLoadRowDetails } from '@/utils/types'
 
 const ordersStore = useOrdersStore()
 const orders = computed(() => ordersStore.orders)
@@ -28,15 +29,17 @@ watch(selectedOrder, (value) => {
   ordersStore.selectOrderIndex(value?.orderId)
 })
 
-const toggleRescheduleDialog = (isToggle, orderData) => {
+const toggleRescheduleDialog = (isToggle: boolean, orderData: EditLoadRowDetails) => {
   const { orderId, id } = orderData
   const load = orderData.nested.load
   ordersStore.updateRescheduleOrder(orderId, id, load)
   ordersStore.toggleRescheduleDialog(true)
 }
 
-const onRowEditSave = (event) => {
+const onRowEditSave = (event: EditLoadRow) => {
+  console.log('onRowEditSave', event)
   let { newData, data } = event
+  console.log('newData', JSON.parse(JSON.stringify(newData)))
   ordersStore.editOrderLoadData(newData, data)
 }
 const updateColor = useDebounceFn((event: string, orderField: Order) => {
@@ -65,9 +68,8 @@ const removeHash = (color: string) => {
 <template>
   <DataTable v-model:expandedRows="expandedRows" v-model:filters="filters" v-model:selection="selectedOrder"
              selectionMode="single" :value="orders"
-             tableStyle="width: 50rem;"
              scrollable scrollHeight="50rem"
-             class="pt-5"
+             class="pt-2"
              @row-click="setExpandedRow"
   >
     <template #header>

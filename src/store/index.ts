@@ -1,6 +1,13 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import { type HistoryChange, type Truck } from '@/utils/types'
+import {
+  type AggregatedOrdersByTime,
+  type Color,
+  type EditLoadRowDetails,
+  type HistoryChange,
+  type IconForPropType,
+  type Truck,
+} from '@/utils/types'
 import { useToast } from 'primevue/usetoast'
 import * as toast from '../composables/toast'
 import { generateChartDataSets, type Order } from '@/composables/chartConfig'
@@ -94,11 +101,11 @@ export const useStore = defineStore('main', {
 
 export const useOrdersStore = defineStore('orders', {
   state: () => ({
-    orders: shallowRef([]) as Order[],
-    aggregatedOrders: [] as any[],
-    selectedOrderIndex: null as number,
+    orders: shallowRef([] as Order[]),
+    aggregatedOrders: {} as AggregatedOrdersByTime,
+    selectedOrderIndex: null as null | number,
     history: [] as HistoryChange[],
-    rescheduleOrder: ref({ orderId: null, id: null, load: null }),
+    rescheduleOrder: ref({} as { orderId: number | null, id: number | null, load: number | null }),
     isRescheduleDialog: ref(false),
     isFormVisible: false,
     isChartUpdate: false,
@@ -110,12 +117,12 @@ export const useOrdersStore = defineStore('orders', {
       this.aggregatedOrders = aggregatedOrdersByTime
     },
     selectOrderIndex(orderId: number) {
-      this.selectedOrderIndex = this.orders.findIndex((order) => order.orderId === orderId)
+      this.selectedOrderIndex = this.orders.findIndex((order: Order) => order.orderId === orderId)
     },
     toggleForm() {
       this.isFormVisible = !this.isFormVisible
     },
-    addNewChangeToHistory(orderId, loadId, description, type, newData, oldData) {
+    addNewChangeToHistory(orderId: number, loadId: number | null , description: string, type: IconForPropType, newData: Color | string | number, oldData: Color | string | number)  {
       const createdBy = 'User'
       const createTime = new Date().toLocaleString()
       this.history.push({ orderId, loadId, description, type, newData, oldData, createdBy, createTime })
@@ -126,10 +133,10 @@ export const useOrdersStore = defineStore('orders', {
       }
       this.isRescheduleDialog = isVisible
     },
-    updateRescheduleOrder(orderId, id, load) {
+    updateRescheduleOrder(orderId: number | null, id: number | null, load: number | null) {
       this.rescheduleOrder = { orderId, id, load }
     },
-    revertHistory(orderId, loadId = null, oldData, index, key = null) {
+    revertHistory(orderId: number, loadId: number | null = null, oldData: string, index: number, key: IconForPropType | null = null) {
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
       if (loadId) {
         const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === loadId)
@@ -157,7 +164,7 @@ export const useOrdersStore = defineStore('orders', {
       this.rescheduleOrder = { orderId: null, id: null, load: null }
       this.isRescheduleDialog = false
     },
-    editOrderLoadData(data: Order, oldData) {
+    editOrderLoadData(data: EditLoadRowDetails, oldData: EditLoadRowDetails) {
       const orderId = data.orderId
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
       const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === data.id)
@@ -181,10 +188,10 @@ export const useOrdersStore = defineStore('orders', {
 
       this.isChartUpdate = true
     },
-    changeColor(indexOfOrder: number, color: string) {
+    changeColor(indexOfOrder: number, color: Color) {
       this.orders[indexOfOrder].backgroundColor = color
     },
-    editOrderBackgroundColor(data: Order, color: string) {
+    editOrderBackgroundColor(data: Order, color: Color) {
       const orderId = data.orderId
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
       const oldColor = JSON.parse(JSON.stringify(this.orders[indexOfOrder].backgroundColor))

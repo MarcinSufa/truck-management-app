@@ -10,15 +10,14 @@ import InputIcon from 'primevue/inputicon'
 import { FilterMatchMode } from '@primevue/core/api'
 import ColorPicker from 'primevue/colorpicker'
 import { getHistoryItemTypeLabel } from '@/composables/dataTableService'
-import { type IconForPropType } from '@/utils/types'
-import { Order } from '@/composables/chartConfig'
+import { type HistoryChange, type IconForPropType } from '@/utils/types'
 
 const ordersStore = useOrdersStore()
 const history = computed(() => ordersStore.history)
 
-const reverseChange = (data: Order, index) => {
+const reverseChange = (data: HistoryChange, index: number) => {
   if (data.orderId) {
-    ordersStore.revertHistory(data.orderId, data.loadId, data.oldData, index, data.type)
+    ordersStore.revertHistory(data.orderId, data?.loadId, data.oldData, index, data.type)
     return
   }
 }
@@ -75,23 +74,24 @@ const getIconForChange = (field: IconForPropType): string => {
     <Column header="Changed fields">
       <template #body="{ data }">
         <div class="flex items-center">
-          <div v-if="data.type === 'backgroundColor'">
-            <span>
-              <ColorPicker :base-z-index="50"
-                           :model-value="data.oldData"
-                           disabled
-                           format="hex"
-              />
-              <i class="pi pi-arrow-right mx-2" />
-              <ColorPicker :base-z-index="50"
-                           :model-value="data.newData"
-                           disabled
-                           format="hex"
-              />
-            </span>
+          <div v-if="data.type === 'backgroundColor'" class="flex items-center">
+
+            <ColorPicker :base-z-index="50"
+                         :model-value="data.oldData"
+                         disabled
+                         format="hex"
+            />
+            <i class="pi pi-arrow-right mx-2" />
+            <ColorPicker :base-z-index="50"
+                         :model-value="data.newData"
+                         disabled
+                         format="hex"
+            />
+
           </div>
           <div v-else>
-            <span>{{ data.oldData }}<i class="pi pi-arrow-right mx-2" /> {{ data.newData }} </span>
+            <span class="flex items-center">{{ data.oldData }}<i class="pi pi-arrow-right mx-2" /> {{ data.newData
+              }} </span>
           </div>
         </div>
       </template>

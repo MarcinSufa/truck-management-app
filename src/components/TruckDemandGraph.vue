@@ -52,8 +52,10 @@
       </Card>
     </transition>
     <div class="flex gap-4">
-      <OrdersDataTable />
-      <div class="w-1/2 pt-5">
+      <div class="w-7/12">
+        <OrdersDataTable />
+      </div>
+      <div class="w-5/12 pt-4">
         <Menubar :model="menuItems" />
         <OverloadedDataTable v-if="activeMenuItem === 'overloaded'" />
         <HistoryDataTable v-if="activeMenuItem === 'history'" />
@@ -102,6 +104,7 @@ const isDarkTheme = ref(false)
 
 const toggleDarkMode = () => {
   const element = document.querySelector('html')
+  if(!element) return
   element.classList.toggle('dark-mode', !isDarkTheme.value)
   isDarkTheme.value = element.classList.contains('dark-mode')
 }

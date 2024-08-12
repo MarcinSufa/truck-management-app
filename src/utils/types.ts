@@ -1,4 +1,3 @@
-import { type Order } from '@/composables/chartConfig'
 import type { BarElement } from 'chart.js'
 
 export type TruckStatus = 'LOADING' | 'TO_JOB' | 'AT_JOB' | 'RETURNING' | 'OUT_OF_SERVICE';
@@ -42,16 +41,43 @@ export type OrderStatus =
   | 'Overloaded'
 
 export type HistoryChange = {
-  oldData: Order;
+  newData: Color | string | number,
+  oldData: Color | string | number,
+  loadId: number | null,
   orderId: number;
   createdBy: string;
   createTime: string;
   description: string;
   type: IconForPropType;
-  newData: Order
 }
+
+type HEX = `#${string}`;
+export type Color = HEX;
 
 export type IconForPropType = 'backgroundColor' | 'load' | 'time'
 
 export type ChartElement = { element: BarElement, datasetIndex: number, index: number }
-export type RescheduleChartDataSet = { backgroundColor: string, data: {load: number, time: string}[], label: string }
+export type RescheduleChartDataSet = { backgroundColor: string, data: { load: number, time: string }[], label: string }
+
+export type EditLoadRowDetails = {
+  id: number,
+  orderId: number,
+  nested: {
+    load: number,
+    time: string,
+    spacing: number
+  },
+  'nested.time'?: string
+  'nested.load'?: number
+}
+
+export type EditLoadRow = {
+  originalEvent: PointerEvent,
+  data: EditLoadRowDetails,
+  newData: EditLoadRowDetails,
+  index: number
+}
+
+export type AggregatedOrdersByTime = {
+  [key in string] : number
+}
