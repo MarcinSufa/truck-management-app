@@ -144,6 +144,19 @@ export const useOrdersStore = defineStore('orders', {
       this.history = this.history.filter((change, i) => i !== index)
       this.isChartUpdate = true
     },
+    rescheduleOrderAction(orderId: number, id: number, time: string) {
+      const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)
+      const indexOfLoad = this.orders[indexOfOrder].data.findIndex((load) => load.id === id)
+      const oldTime = this.orders[indexOfOrder].data[indexOfLoad].nested.time
+      this.addNewChangeToHistory(orderId, id, 'Reschedule Load', 'time', time, oldTime)
+      this.orders[indexOfOrder].data[indexOfLoad].nested.time = time
+      this.resetRescheduleDialog()
+      this.isChartUpdate = true
+    },
+    resetRescheduleDialog() {
+      this.rescheduleOrder = { orderId: null, id: null, load: null }
+      this.isRescheduleDialog = false
+    },
     editOrderLoadData(data: Order, oldData) {
       const orderId = data.orderId
       const indexOfOrder = this.orders.findIndex((order) => order.orderId === orderId)

@@ -3,11 +3,11 @@ import { type OrderStatus } from '@/utils/types'
 export const getStatusLabel = (status: OrderStatus) => {
   switch (status) {
     case 'Will Call':
-      return 'warning'
+      return 'warn'
     case 'Weather Permitting':
       return 'info'
     case 'Wait list':
-      return 'warning'
+      return 'warn'
     case 'Normal':
       return 'success'
     case 'Hold Delivery':
@@ -15,7 +15,7 @@ export const getStatusLabel = (status: OrderStatus) => {
     case 'Completed':
       return 'success'
     case 'Overloaded':
-      return 'warning'
+      return 'warn'
     default:
       return 'info'
   }

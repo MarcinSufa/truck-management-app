@@ -7,6 +7,7 @@ import { PLANT_PRODUCTION, setChartOptions } from '@/composables/chartConfig'
 import { calculateDayTimeLines } from '@/composables/time'
 
 const ordersStore = useOrdersStore()
+const chartReschedule = ref()
 const isRescheduleDialog = computed({
     get() {
       return ordersStore.isRescheduleDialog
@@ -28,7 +29,6 @@ onMounted(() => {
 
 const updateChartData = () => {
   ordersStore.fetchOrders()
-  // ordersStore.generateAggregatedOrdersData()
   chartData.value = setChartData()
 }
 
@@ -48,9 +48,9 @@ const createDatasets = () => {
       time: time,
     }
   })
-  console.log('datasetForAvailableTime', datasetForAvailableTime)
   return { datasetsFromAggregatedOrders, datasetForAvailableTime }
 }
+
 
 const setChartData = () => {
   return {
@@ -63,12 +63,12 @@ const setChartData = () => {
   }
 }
 
-
 </script>
 <template>
   <Dialog v-model:visible="isRescheduleDialog" header="Reschedule Order" :modal="true" :closable="true"
           :style="{ width: '50vw' }"
   >
-    <Chart ref="chartMain" type="bar" :data="chartData" :options="chartOptions" class="h-[20rem]" />
+    <Chart ref="chartReschedule" type="bar" :data="chartData" :options="chartOptions" class="h-[20rem]"
+    />
   </Dialog>
 </template>

@@ -1,5 +1,7 @@
 import { calculateDayTimeLines } from './time.ts'
 import moment from 'moment/moment'
+import { useOrdersStore } from '@/store'
+import type { ChartElement, RescheduleChartDataSet } from '@/utils/types'
 
 export type Order = {
   label: string;
@@ -241,6 +243,15 @@ export const addExternalTooltip = (context) => {
   tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px'
 }
 
+export const rescheduleOrder = (clickedChartElement: ChartElement, datasets: RescheduleChartDataSet) => {
+  const ordersStore = useOrdersStore()
+  const { datasetIndex, index } = clickedChartElement
+  const time = datasets[datasetIndex].data[index].time as string
+  const { orderId, id } = ordersStore.rescheduleOrder
+  ordersStore.rescheduleOrderAction(orderId, id, time)
+
+}
+
 export const setChartOptions = () => {
   const documentStyle = getComputedStyle(document.documentElement)
   const textColor = documentStyle.getPropertyValue('--p-text-color')
@@ -257,16 +268,16 @@ export const setChartOptions = () => {
       console.log('click', e)
       const chart = e.chart
       const event = e.native
-      console.log(
-        'on click',
-        chart.getElementsAtEventForMode(
-          event,
-          'nearest',
-          { intersect: true },
-          false,
-        ),
-      )
-
+      const dataSets = e.chart.data.datasets as RescheduleChartDataSet
+      const element = chart.getElementsAtEventForMode(
+        event,
+        'nearest',
+        { intersect: true },
+        false,
+      )[0] as ChartElement
+      if (element?.datasetIndex && element?.index) {
+        rescheduleOrder(element, dataSets)
+      }
     },
     onHover: () => {
     },

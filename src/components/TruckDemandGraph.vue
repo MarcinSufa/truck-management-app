@@ -76,11 +76,9 @@ import { storeToRefs } from 'pinia'
 import HistoryDataTable from './HistoryDataTable.vue'
 import Menubar from 'primevue/menubar'
 import OverloadedDataTable from './OverloadedDataTable.vue'
-import { usePrimeVue } from 'primevue/config'
 
 
 const ordersStore = useOrdersStore()
-const PrimeVue = usePrimeVue()
 const isHoverActive = ref(false)
 const orders = computed(() => ordersStore.orders)
 const activeMenuItem = ref('overloaded')
@@ -96,7 +94,6 @@ const menuItems = ref([
     label: 'Overloaded Orders',
     icon: 'pi pi-exclamation-triangle',
     command: () => {
-      console.log('Overloaded Orders')
       activeMenuItem.value = 'overloaded'
     },
   }])
@@ -134,13 +131,20 @@ watch(selectedOrderIndex, () => {
   activateBarsFromOneOrder(selectedOrderIndex.value, true)
 })
 
+type TooltipData = {
+  position: { x: number, y: number },
+  datasetIndex: number,
+  id: string,
+  loadData: { id: string, nested: { time: string } }
+}
+
 const timeUpdateInput = ref()
 const chartMain = ref()
 const tooltipRef = ref()
 const chartData = shallowRef()
 const chartOptions = ref()
 const tooltipActive = ref(false)
-const tooltipData = reactive({ position: undefined, datasetIndex: undefined, id: undefined, loadData: undefined })
+const tooltipData = reactive({}) as TooltipData
 
 const resetZoom = () => {
   const chart = chartMain.value.getChart()

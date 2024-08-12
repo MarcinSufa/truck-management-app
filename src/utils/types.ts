@@ -1,4 +1,5 @@
 import { type Order } from '@/composables/chartConfig'
+import type { BarElement } from 'chart.js'
 
 export type TruckStatus = 'LOADING' | 'TO_JOB' | 'AT_JOB' | 'RETURNING' | 'OUT_OF_SERVICE';
 
@@ -51,3 +52,6 @@ export type HistoryChange = {
 }
 
 export type IconForPropType = 'backgroundColor' | 'load' | 'time'
+
+export type ChartElement = { element: BarElement, datasetIndex: number, index: number }
+export type RescheduleChartDataSet = { backgroundColor: string, data: {load: number, time: string}[], label: string }
