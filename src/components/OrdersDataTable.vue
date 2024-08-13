@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DataTable, { DataTableRowClickEvent } from 'primevue/datatable'
+import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
 import Tag from 'primevue/tag'
 import IconField from 'primevue/iconfield'
@@ -68,7 +68,7 @@ const removeHash = (color: string) => {
 <template>
   <DataTable v-model:expandedRows="expandedRows" v-model:filters="filters" v-model:selection="selectedOrder"
              selectionMode="single" :value="orders"
-             scrollable scrollHeight="50rem"
+             scrollable scrollHeight="55rem"
              class="pt-2"
              @row-click="setExpandedRow"
   >

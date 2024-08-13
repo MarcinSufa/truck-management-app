@@ -4,7 +4,7 @@
       <Button icon="pi pi-times w-full " label="Zoom" raised @click="resetZoom" />
       <Button icon="pi pi-undo w-full " label="Generate" raised @click="updateChartData" />
       <Button type="button" @click="toggleDarkMode" rounded
-              :icon="{ 'pi pi-moon': isDarkTheme, 'pi pi-sun': !isDarkTheme }" severity="secondary"
+              :icon="isDarkTheme ? 'pi pi-moon': 'pi pi-sun'" severity="secondary"
       />
       <!--      <ToggleButton v-model="toggleSummaryOrdersView" @change="updateChartOptions" onLabel="Summary" offLabel="Details"-->
       <!--                    onIcon="pi pi-lock"-->
@@ -104,7 +104,7 @@ const isDarkTheme = ref(false)
 
 const toggleDarkMode = () => {
   const element = document.querySelector('html')
-  if(!element) return
+  if (!element) return
   element.classList.toggle('dark-mode', !isDarkTheme.value)
   isDarkTheme.value = element.classList.contains('dark-mode')
 }
